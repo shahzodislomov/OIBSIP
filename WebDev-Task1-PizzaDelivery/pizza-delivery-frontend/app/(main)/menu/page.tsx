@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, SlidersHorizontal, Star, Flame, Sparkles, Plus, Check } from 'lucide-react';
+import { Search, Star, Sparkles, Plus } from 'lucide-react';
 import { SpotlightCard } from '@/components/animations/spotlight-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,101 +29,15 @@ interface PizzaItem {
 
 const categories = ['All', 'Classic', 'Gourmet', 'Veggie', 'Meat Lovers', 'Specialty', 'Sides', 'Desserts'];
 
-const initialPizzas: PizzaItem[] = [
-  {
-    _id: '1',
-    name: 'Margherita Supreme',
-    slug: 'margherita-supreme',
-    description: 'Classic artisanal tomato sauce, freshly torn mozzarella, sweet basil leaves, olive oil drizzle.',
-    category: 'Classic',
-    prices: { small: 249, medium: 399, large: 549 },
-    image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800&q=80',
-    rating: 4.9,
-    numReviews: 88,
-    isVegetarian: true,
-    isSpicy: false,
-    ingredients: ['Tomato Sauce', 'Mozzarella', 'Fresh Basil', 'Olive Oil'],
-  },
-  {
-    _id: '2',
-    name: 'Pepperoni Overload',
-    slug: 'pepperoni-overload',
-    description: 'Double layer of crispy cupped pepperoni, aged mozzarella, rich marinara sauce, and oregano.',
-    category: 'Meat Lovers',
-    prices: { small: 299, medium: 499, large: 699 },
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80',
-    rating: 4.8,
-    numReviews: 142,
-    isVegetarian: false,
-    isSpicy: true,
-    ingredients: ['Pepperoni', 'Mozzarella', 'Marinara', 'Oregano'],
-  },
-  {
-    _id: '3',
-    name: 'Truffle Mushroom Gourmet',
-    slug: 'truffle-mushroom-gourmet',
-    description: 'Wild garlic roasted mushrooms, black truffle oil infusion, creamy ricotta, and smoked provolone.',
-    category: 'Gourmet',
-    prices: { small: 349, medium: 579, large: 799 },
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
-    rating: 4.95,
-    numReviews: 64,
-    isVegetarian: true,
-    isSpicy: false,
-    ingredients: ['Mushrooms', 'Truffle Oil', 'Ricotta', 'Provolone'],
-  },
-  {
-    _id: '4',
-    name: 'Fiery BBQ Chicken',
-    slug: 'fiery-bbq-chicken',
-    description: 'Smoky grilled chicken breast, spicy habanero BBQ sauce, caramelized red onions, fresh cilantro.',
-    category: 'Specialty',
-    prices: { small: 329, medium: 529, large: 729 },
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
-    rating: 4.7,
-    numReviews: 96,
-    isVegetarian: false,
-    isSpicy: true,
-    ingredients: ['Grilled Chicken', 'BBQ Sauce', 'Red Onions', 'Mozzarella'],
-  },
-  {
-    _id: '5',
-    name: 'Garden Harvest Veggie',
-    slug: 'garden-harvest-veggie',
-    description: 'Bell peppers, cherry tomatoes, kalamata olives, artichoke hearts, crumbled feta cheese, and pesto.',
-    category: 'Veggie',
-    prices: { small: 279, medium: 449, large: 629 },
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80',
-    rating: 4.85,
-    numReviews: 75,
-    isVegetarian: true,
-    isSpicy: false,
-    ingredients: ['Bell Peppers', 'Tomatoes', 'Olives', 'Feta', 'Pesto'],
-  },
-  {
-    _id: '6',
-    name: 'Quattro Formaggi',
-    slug: 'quattro-formaggi',
-    description: 'Decadent blend of Gorgonzola piccante, Gorgonzola dolce, Fontina, Parmigiano Reggiano, and Mozzarella.',
-    category: 'Gourmet',
-    prices: { small: 349, medium: 569, large: 789 },
-    image: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?auto=format&fit=crop&w=800&q=80',
-    rating: 4.9,
-    numReviews: 53,
-    isVegetarian: true,
-    isSpicy: false,
-    ingredients: ['Four Cheeses', 'Honey Drizzle', 'Herbs'],
-  },
-];
-
 export default function MenuPage() {
-  const [pizzas, setPizzas] = useState<PizzaItem[]>(initialPizzas);
+  const [pizzas, setPizzas] = useState<PizzaItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortOption, setSortOption] = useState<string>('rating');
   const [vegOnly, setVegOnly] = useState<boolean>(false);
   const [spicyOnly, setSpicyOnly] = useState<boolean>(false);
-  
+
   // Customization Modal
   const [activePizza, setActivePizza] = useState<PizzaItem | null>(null);
   const [selectedSize, setSelectedSize] = useState<'small' | 'medium' | 'large'>('medium');
@@ -135,32 +49,36 @@ export default function MenuPage() {
     const fetchPizzas = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/pizzas');
-        if (res.data?.pizzas?.length) {
+        if (res.data?.pizzas) {
           setPizzas(res.data.pizzas);
         }
       } catch (err) {
-        // Fallback to local state if backend down
+        console.error('Failed to fetch pizzas:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPizzas();
   }, []);
 
-  const filteredPizzas = pizzas.filter((pizza) => {
-    if (selectedCategory !== 'All' && pizza.category !== selectedCategory) return false;
-    if (vegOnly && !pizza.isVegetarian) return false;
-    if (spicyOnly && !pizza.isSpicy) return false;
-    if (searchQuery.trim() !== '') {
-      const q = searchQuery.toLowerCase();
-      const matchName = pizza.name.toLowerCase().includes(q);
-      const matchDesc = pizza.description.toLowerCase().includes(q);
-      if (!matchName && !matchDesc) return false;
-    }
-    return true;
-  }).sort((a, b) => {
-    if (sortOption === 'price-low') return a.prices.medium - b.prices.medium;
-    if (sortOption === 'price-high') return b.prices.medium - a.prices.medium;
-    return b.rating - a.rating;
-  });
+  const filteredPizzas = pizzas
+    .filter((pizza) => {
+      if (selectedCategory !== 'All' && pizza.category !== selectedCategory) return false;
+      if (vegOnly && !pizza.isVegetarian) return false;
+      if (spicyOnly && !pizza.isSpicy) return false;
+      if (searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase();
+        const matchName = pizza.name.toLowerCase().includes(q);
+        const matchDesc = pizza.description.toLowerCase().includes(q);
+        if (!matchName && !matchDesc) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortOption === 'price-low') return a.prices.medium - b.prices.medium;
+      if (sortOption === 'price-high') return b.prices.medium - a.prices.medium;
+      return b.rating - a.rating;
+    });
 
   const handleAddToCart = (pizza: PizzaItem, size: 'small' | 'medium' | 'large' = 'medium') => {
     addItem({
@@ -195,7 +113,6 @@ export default function MenuPage() {
       {/* Filter & Search Bar */}
       <section className="space-y-6">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-white/10">
-          {/* Search Input */}
           <div className="flex-1 max-w-md">
             <Input
               icon={<Search className="w-4 h-4 text-stone-400" />}
@@ -206,7 +123,6 @@ export default function MenuPage() {
             />
           </div>
 
-          {/* Toggle Buttons & Sorting */}
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setVegOnly(!vegOnly)}
@@ -230,7 +146,6 @@ export default function MenuPage() {
               🌶️ Spicy Only
             </button>
 
-            {/* Sort Select */}
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
@@ -243,7 +158,6 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Category Pill Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {categories.map((cat) => (
             <button
@@ -263,7 +177,9 @@ export default function MenuPage() {
 
       {/* Pizza Cards Grid */}
       <section>
-        {filteredPizzas.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12 text-stone-400">Loading live menu...</div>
+        ) : filteredPizzas.length === 0 ? (
           <div className="glass-panel rounded-3xl p-12 text-center space-y-3">
             <div className="text-5xl">🔍</div>
             <h3 className="text-xl font-bold text-white">No pizzas match your filters</h3>
@@ -387,7 +303,6 @@ export default function MenuPage() {
               <p className="text-xs text-stone-300 leading-relaxed">{activePizza.description}</p>
             </div>
 
-            {/* Size Selector */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-stone-200 uppercase tracking-wider">
                 Select Crust Size

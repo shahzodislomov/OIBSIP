@@ -33,7 +33,7 @@ const fallbackIngredients: Ingredient[] = [
 ];
 
 export default function AdminInventoryPage() {
-  const [ingredients, setIngredients] = useState<Ingredient[]>(fallbackIngredients);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const { showToast } = useToast();
 

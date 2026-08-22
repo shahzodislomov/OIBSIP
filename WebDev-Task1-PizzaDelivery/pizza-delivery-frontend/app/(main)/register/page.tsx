@@ -6,13 +6,11 @@ import { useRouter } from 'next/navigation';
 import { User, Mail, Lock, Phone, ArrowRight, Pizza } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/components/ui/toast';
 import axios from 'axios';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
   const { showToast } = useToast();
 
   const [name, setName] = useState('');
@@ -20,10 +18,12 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg('');
 
     try {
       const res = await axios.post('http://localhost:5000/api/auth/register', {
@@ -33,21 +33,14 @@ export default function RegisterPage() {
         phone,
       });
 
-      if (res.data?.user && res.data?.token) {
-        setAuth(res.data.user, res.data.token);
-        showToast('Account Created!', 'Welcome to PizzaCraft!', 'success');
-        router.push('/');
-      } else {
-        const dummyUser = { _id: 'u2', name, email, phone };
-        setAuth(dummyUser, 'mock_jwt_token_123');
-        showToast('Account Created!', 'Welcome to PizzaCraft!', 'success');
-        router.push('/');
-      }
+      showToast('Account Created!', 'Verification email sent. Please check your inbox.', 'success');
+      router.push(`/verify-email?registered=true&email=${encodeURIComponent(email)}`);
     } catch (err: any) {
-      const dummyUser = { _id: 'u2', name, email, phone };
-      setAuth(dummyUser, 'mock_jwt_token_123');
-      showToast('Account Created!', 'Welcome to PizzaCraft!', 'success');
-      router.push('/');
+      const msg = err.response?.data?.message || 'Registration failed. Please try again.';
+      setErrorMsg(msg);
+      showToast('Registration Note', msg, 'info');
+      // If mock mode fallback
+      router.push(`/verify-email?registered=true&email=${encodeURIComponent(email)}`);
     } finally {
       setIsLoading(false);
     }
@@ -61,8 +54,14 @@ export default function RegisterPage() {
             <Pizza className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-black text-white">Create Account</h1>
-          <p className="text-xs text-stone-400">Join PizzaCraft for fast ordering & exclusive offers</p>
+          <p className="text-xs text-stone-400">Join PizzaCraft for fast ordering & email verification</p>
         </div>
+
+        {errorMsg && (
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs text-center">
+            {errorMsg}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
@@ -120,7 +119,7 @@ export default function RegisterPage() {
             size="lg"
             className="w-full rounded-2xl shadow-xl shadow-orange-500/30 mt-2"
           >
-            <span>Create Account</span>
+            <span>Register & Verify Email</span>
             <ArrowRight className="w-4 h-4" />
           </Button>
         </form>

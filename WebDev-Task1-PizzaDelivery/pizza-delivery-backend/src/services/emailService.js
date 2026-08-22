@@ -1,47 +1,53 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-    auth: {
+const createTransporter = () => {
+  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+    return nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 587,
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
-    },
-})
+      },
+    });
+  }
+  return null;
+};
 
 const sendVerificationEmail = async (email, token) => {
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
-    const mailOptions = {
-        from: process.env.EMAIL_FROM,
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
+
+  console.log(`\n📧 [EMAIL VERIFICATION LINK FOR ${email}]: ${verificationUrl}\n`);
+
+  try {
+    const transporter = createTransporter();
+    if (transporter) {
+      const mailOptions = {
+        from: process.env.EMAIL_FROM || '"PizzaCraft" <noreply@pizzacraft.com>',
         to: email,
-        subject: 'Email Verification',
+        subject: 'Verify your PizzaCraft Email Address',
         html: `
-            <h2>Welcome to Pizza Delivery 🍕</h2>
-
-            <p>Thanks for creating an account.</p>
-
-            <p>Please verify your email address by clicking the button below:</p>
-
-            <a
-                href="${verificationUrl}"
-                style="
-                    display:inline-block;
-                    padding:12px 20px;
-                    background:#e63946;
-                    color:white;
-                    text-decoration:none;
-                    border-radius:6px;
-                "
-            >
-                Verify Email
+          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+            <h2>Welcome to PizzaCraft 🍕</h2>
+            <p>Thanks for creating an account!</p>
+            <p>Please click the button below to verify your email address:</p>
+            <a href="${verificationUrl}" style="display:inline-block; padding:12px 24px; background:#f97316; color:white; text-decoration:none; border-radius:12px; font-weight:bold;">
+              Verify Email Address
             </a>
-
-            <p>This link expires in 1 hour.</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #777;">Or copy this link: <a href="${verificationUrl}">${verificationUrl}</a></p>
+            <p style="font-size: 12px; color: #777;">This link expires in 1 hour.</p>
+          </div>
         `,
+      };
+      await transporter.sendMail(mailOptions);
     }
-    await transporter.sendMail(mailOptions);
-}
+  } catch (err) {
+    console.error('SMTP Email sending error (verification link printed in console above):', err.message);
+  }
+};
+
 module.exports = {
-    sendVerificationEmail,
-}
+  sendVerificationEmail,
+};

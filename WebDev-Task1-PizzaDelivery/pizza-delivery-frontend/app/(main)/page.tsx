@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, Clock, Star, Flame, ShieldCheck, Truck, ChevronRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Star, Flame, ChevronRight } from 'lucide-react';
 import { SplitText } from '@/components/animations/split-text';
 import { DecryptedText } from '@/components/animations/decrypted-text';
 import { MagnetButton } from '@/components/animations/magnet-button';
@@ -29,50 +29,9 @@ interface PizzaItem {
   isSpicy: boolean;
 }
 
-const fallbackPizzas: PizzaItem[] = [
-  {
-    _id: '1',
-    name: 'Margherita Supreme',
-    slug: 'margherita-supreme',
-    description: 'Classic artisanal tomato sauce, freshly torn mozzarella, sweet basil leaves, olive oil drizzle.',
-    category: 'Classic',
-    prices: { small: 249, medium: 399, large: 549 },
-    image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800&q=80',
-    rating: 4.9,
-    numReviews: 88,
-    isVegetarian: true,
-    isSpicy: false,
-  },
-  {
-    _id: '2',
-    name: 'Pepperoni Overload',
-    slug: 'pepperoni-overload',
-    description: 'Double layer of crispy cupped pepperoni, aged mozzarella, rich marinara sauce, and oregano.',
-    category: 'Meat Lovers',
-    prices: { small: 299, medium: 499, large: 699 },
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80',
-    rating: 4.8,
-    numReviews: 142,
-    isVegetarian: false,
-    isSpicy: true,
-  },
-  {
-    _id: '3',
-    name: 'Truffle Mushroom Gourmet',
-    slug: 'truffle-mushroom-gourmet',
-    description: 'Wild garlic roasted mushrooms, black truffle oil infusion, creamy ricotta, and smoked provolone.',
-    category: 'Gourmet',
-    prices: { small: 349, medium: 579, large: 799 },
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
-    rating: 4.95,
-    numReviews: 64,
-    isVegetarian: true,
-    isSpicy: false,
-  },
-];
-
 export default function HomePage() {
-  const [pizzas, setPizzas] = useState<PizzaItem[]>(fallbackPizzas);
+  const [pizzas, setPizzas] = useState<PizzaItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addItem } = useCartStore();
   const { showToast } = useToast();
 
@@ -80,11 +39,13 @@ export default function HomePage() {
     const fetchPizzas = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/pizzas');
-        if (res.data?.pizzas?.length) {
-          setPizzas(res.data.pizzas.slice(0, 6));
+        if (res.data?.pizzas) {
+          setPizzas(res.data.pizzas);
         }
       } catch (err) {
-        // Fallback to initial data if backend not yet running locally
+        console.error('Error fetching pizzas:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPizzas();
@@ -101,6 +62,8 @@ export default function HomePage() {
     });
     showToast(`${pizza.name} added to cart!`, 'Medium size (12") added successfully.', 'success');
   };
+
+  const featuredPizza = pizzas[0];
 
   return (
     <div className="relative space-y-20 pb-20 pt-6">
@@ -167,46 +130,50 @@ export default function HomePage() {
           </div>
 
           {/* Hero Feature Showcase Card */}
-          <div className="relative flex justify-center">
-            <SpotlightCard className="w-full max-w-md bg-stone-950/80 border-white/15 p-6 rounded-3xl shadow-2xl">
-              <div className="relative group overflow-hidden rounded-2xl mb-5">
-                <img
-                  src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80"
-                  alt="Truffle Mushroom Gourmet"
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <Badge variant="accent" className="absolute top-3 right-3 shadow-lg">
-                  🔥 Deal of the Day
-                </Badge>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-black text-white">Truffle Mushroom Gourmet</h3>
-                  <span className="text-2xl font-black text-orange-400">₹579</span>
+          {featuredPizza && (
+            <div className="relative flex justify-center">
+              <SpotlightCard className="w-full max-w-md bg-stone-950/80 border-white/15 p-6 rounded-3xl shadow-2xl">
+                <div className="relative group overflow-hidden rounded-2xl mb-5">
+                  <img
+                    src={featuredPizza.image}
+                    alt={featuredPizza.name}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <Badge variant="accent" className="absolute top-3 right-3 shadow-lg">
+                    🔥 Deal of the Day
+                  </Badge>
                 </div>
-                <p className="text-xs text-stone-400 leading-relaxed">
-                  Wild garlic roasted mushrooms, black truffle oil infusion, creamy ricotta, and smoked provolone cheese.
-                </p>
 
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                  <div className="flex items-center gap-1.5 text-xs text-amber-300">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    <span className="font-bold">4.95</span>
-                    <span className="text-stone-500">(120+ reviews)</span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-black text-white">{featuredPizza.name}</h3>
+                    <span className="text-2xl font-black text-orange-400">
+                      {formatPrice(featuredPizza.prices.medium)}
+                    </span>
                   </div>
-                  <Button
-                    onClick={() => handleQuickAdd(fallbackPizzas[2])}
-                    variant="default"
-                    size="sm"
-                    className="rounded-xl shadow-md"
-                  >
-                    Quick Add +
-                  </Button>
+                  <p className="text-xs text-stone-400 leading-relaxed">
+                    {featuredPizza.description}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                    <div className="flex items-center gap-1.5 text-xs text-amber-300">
+                      <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <span className="font-bold">{featuredPizza.rating}</span>
+                      <span className="text-stone-500">({featuredPizza.numReviews} reviews)</span>
+                    </div>
+                    <Button
+                      onClick={() => handleQuickAdd(featuredPizza)}
+                      variant="default"
+                      size="sm"
+                      className="rounded-xl shadow-md"
+                    >
+                      Quick Add +
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </SpotlightCard>
-          </div>
+              </SpotlightCard>
+            </div>
+          )}
         </div>
       </section>
 
@@ -229,64 +196,68 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pizzas.map((pizza) => (
-            <SpotlightCard key={pizza._id} className="flex flex-col justify-between h-full group">
-              <div>
-                <div className="relative overflow-hidden rounded-2xl mb-4 h-48">
-                  <img
-                    src={pizza.image}
-                    alt={pizza.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    {pizza.isVegetarian && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold">
-                        🌱 VEG
-                      </span>
-                    )}
-                    {pizza.isSpicy && (
-                      <span className="px-2 py-0.5 rounded-full bg-red-950/90 text-red-400 border border-red-500/40 text-[10px] font-bold">
-                        🌶️ SPICY
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-lg text-stone-100 group-hover:text-orange-400 transition-colors">
-                    {pizza.name}
-                  </h3>
-                  <span className="text-xs px-2 py-1 rounded-lg bg-stone-900 text-stone-300 border border-white/10 font-mono">
-                    {pizza.category}
-                  </span>
-                </div>
-
-                <p className="text-xs text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-                  {pizza.description}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+        {loading ? (
+          <div className="text-center py-12 text-stone-400">Loading menu items from API...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pizzas.slice(0, 6).map((pizza) => (
+              <SpotlightCard key={pizza._id} className="flex flex-col justify-between h-full group">
                 <div>
-                  <span className="text-xs text-stone-400 block">Medium 12"</span>
-                  <span className="text-lg font-extrabold text-orange-400">
-                    {formatPrice(pizza.prices.medium)}
-                  </span>
+                  <div className="relative overflow-hidden rounded-2xl mb-4 h-48">
+                    <img
+                      src={pizza.image}
+                      alt={pizza.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      {pizza.isVegetarian && (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold">
+                          🌱 VEG
+                        </span>
+                      )}
+                      {pizza.isSpicy && (
+                        <span className="px-2 py-0.5 rounded-full bg-red-950/90 text-red-400 border border-red-500/40 text-[10px] font-bold">
+                          🌶️ SPICY
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-lg text-stone-100 group-hover:text-orange-400 transition-colors">
+                      {pizza.name}
+                    </h3>
+                    <span className="text-xs px-2 py-1 rounded-lg bg-stone-900 text-stone-300 border border-white/10 font-mono">
+                      {pizza.category}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+                    {pizza.description}
+                  </p>
                 </div>
 
-                <Button
-                  onClick={() => handleQuickAdd(pizza)}
-                  variant="default"
-                  size="sm"
-                  className="rounded-xl"
-                >
-                  Add to Order
-                </Button>
-              </div>
-            </SpotlightCard>
-          ))}
-        </div>
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs text-stone-400 block">Medium 12"</span>
+                    <span className="text-lg font-extrabold text-orange-400">
+                      {formatPrice(pizza.prices.medium)}
+                    </span>
+                  </div>
+
+                  <Button
+                    onClick={() => handleQuickAdd(pizza)}
+                    variant="default"
+                    size="sm"
+                    className="rounded-xl"
+                  >
+                    Add to Order
+                  </Button>
+                </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Visual Custom Pizza Banner */}
@@ -299,7 +270,7 @@ export default function HomePage() {
               Craft Your Masterpiece Step-by-Step
             </h2>
             <p className="text-stone-300 text-sm leading-relaxed">
-              Choose your artisan crust, select house-made sauce, double the cheese, and layer unlimited veggies and meats with instant 2D animated visual updates!
+              Choose your artisan crust, select house-made sauce, double the cheese, and layer veggies and meats with instant 2D animated visual updates!
             </p>
             <Link href="/builder" className="inline-block pt-2">
               <MagnetButton magnetStrength={0.2}>

@@ -57,7 +57,7 @@ const sizePrices = {
 };
 
 export default function CustomBuilderPage() {
-  const [ingredients, setIngredients] = useState<IngredientItem[]>(fallbackIngredients);
+  const [ingredients, setIngredients] = useState<IngredientItem[]>([]);
   const [selectedSize, setSelectedSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [selectedCrust, setSelectedCrust] = useState<string>('Classic Hand Tossed');
   const [selectedSauce, setSelectedSauce] = useState<string>('Classic Tomato Sauce');

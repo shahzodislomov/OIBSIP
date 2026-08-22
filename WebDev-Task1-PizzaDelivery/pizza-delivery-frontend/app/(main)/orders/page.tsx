@@ -42,7 +42,7 @@ const fallbackOrders: OrderSummary[] = [
 ];
 
 export default function OrderHistoryPage() {
-  const [orders, setOrders] = useState<OrderSummary[]>(fallbackOrders);
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
   const { user } = useAuthStore();
 
   useEffect(() => {
