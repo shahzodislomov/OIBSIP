@@ -156,7 +156,7 @@ export default function AdminInventoryPage() {
               return (
                 <tr key={item._id} className="hover:bg-white/5 transition-colors">
                   <td className="py-4 px-4 font-bold text-stone-100 flex items-center gap-2">
-                    <span className="text-lg">{item.icon}</span>
+                    <span className="w-2 h-2 rounded-full bg-orange-500" />
                     <span>{item.name}</span>
                   </td>
                   <td className="py-4 px-4 uppercase text-stone-400 font-mono">{item.category}</td>
