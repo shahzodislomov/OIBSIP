@@ -95,7 +95,7 @@ const initialPizzas = [
   {
     name: 'Choco Lava Cake',
     slug: 'choco-lava-cake',
-    description: 'Warm chocolate cake with a gooey, molten molten chocolate center.',
+    description: 'Warm chocolate cake with a gooey, molten chocolate center.',
     category: 'Desserts',
     prices: { small: 129, medium: 129, large: 129 },
     image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
@@ -104,6 +104,19 @@ const initialPizzas = [
     isVegetarian: true,
     isSpicy: false,
     ingredients: ['Dark Chocolate', 'Butter', 'Cocoa'],
+  },
+  {
+    name: 'Smoky Artisan Burrata',
+    slug: 'smoky-artisan-burrata',
+    description: 'Creamy burrata ball placed fresh after baking, prosciutto di Parma, cherry tomatoes, and aged balsamic glaze.',
+    category: 'Gourmet',
+    prices: { small: 399, medium: 599, large: 849 },
+    image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&q=80',
+    rating: 4.98,
+    numReviews: 45,
+    isVegetarian: false,
+    isSpicy: false,
+    ingredients: ['Fresh Burrata', 'Prosciutto', 'Cherry Tomatoes', 'Balsamic Glaze', 'Arugula'],
   }
 ];
 
