@@ -34,11 +34,11 @@ export const SiteHeader: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 glass-panel bg-black/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 glass-panel bg-[#08080d]/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform duration-300">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-600 flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-105 transition-transform duration-300">
             <Pizza className="w-6 h-6 text-white group-hover:rotate-12 transition-transform duration-300" />
           </div>
           <div>
@@ -46,13 +46,13 @@ export const SiteHeader: React.FC = () => {
               PIZZA<span className="text-orange-500">CRAFT</span>
             </span>
             <span className="text-[10px] uppercase font-mono tracking-widest text-amber-400 block -mt-1">
-              Artisanal Delivery
+              Artisanal Stone-Fired
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 bg-stone-900/60 p-1.5 rounded-2xl border border-white/5">
+        <nav className="hidden md:flex items-center gap-1 bg-[#12111d]/80 p-1.5 rounded-2xl border border-white/10">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -91,7 +91,7 @@ export const SiteHeader: React.FC = () => {
           {/* Cart Trigger Button */}
           <button
             onClick={toggleCart}
-            className="relative p-2.5 rounded-xl bg-stone-900/80 border border-white/10 hover:border-orange-500/40 text-stone-200 hover:text-white transition-all duration-200 active:scale-95"
+            className="relative p-2.5 rounded-xl bg-[#12111d]/90 border border-white/10 hover:border-orange-500/40 text-stone-200 hover:text-white transition-all duration-200 active:scale-95 cursor-pointer"
             aria-label="Shopping Cart"
           >
             <ShoppingBag className="w-5 h-5 text-orange-400" />
@@ -108,7 +108,7 @@ export const SiteHeader: React.FC = () => {
               <div>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2.5 p-1.5 pl-3 rounded-xl bg-stone-900/80 border border-white/10 hover:border-orange-500/40 text-stone-200 hover:text-white transition-colors"
+                  className="flex items-center gap-2.5 p-1.5 pl-3 rounded-xl bg-[#12111d]/90 border border-white/10 hover:border-orange-500/40 text-stone-200 hover:text-white transition-colors cursor-pointer"
                 >
                   <div className="w-7 h-7 rounded-full bg-orange-500/20 text-orange-400 font-bold text-xs flex items-center justify-center border border-orange-500/30">
                     {user.name ? user.name[0].toUpperCase() : 'U'}
@@ -120,12 +120,12 @@ export const SiteHeader: React.FC = () => {
 
                 {/* User Dropdown */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 glass-panel rounded-2xl p-2 shadow-2xl border border-white/15 z-50 animate-in fade-in zoom-in-95">
+                  <div className="absolute right-0 mt-2 w-56 glass-panel bg-[#12111d] rounded-2xl p-2 shadow-2xl border border-white/15 z-50 animate-in fade-in zoom-in-95">
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
                       <p className="text-sm font-semibold text-white">{user.name}</p>
                       <p className="text-xs text-stone-400 truncate">{user.email}</p>
                     </div>
-                    {user.role === 'admin' && (
+                    {(user.role === 'admin' || user.isAdmin) && (
                       <Link
                         href="/admin"
                         onClick={() => setUserDropdownOpen(false)}
@@ -145,7 +145,7 @@ export const SiteHeader: React.FC = () => {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-xl transition-colors mt-1"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-xl transition-colors mt-1 cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign Out
@@ -166,7 +166,7 @@ export const SiteHeader: React.FC = () => {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl bg-stone-900 border border-white/10 text-stone-300"
+            className="md:hidden p-2 rounded-xl bg-[#12111d] border border-white/10 text-stone-300 cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -175,7 +175,7 @@ export const SiteHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden glass-panel border-t border-white/10 px-4 py-4 space-y-2 animate-in slide-in-from-top-4">
+        <div className="md:hidden glass-panel bg-[#12111d] border-t border-white/10 px-4 py-4 space-y-2 animate-in slide-in-from-top-4">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -195,7 +195,7 @@ export const SiteHeader: React.FC = () => {
             onClick={() => setMobileMenuOpen(false)}
             className="block w-full text-center py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-xl shadow-lg mt-2"
           >
-            🍕 Build Custom Pizza
+            Build Custom Pizza
           </Link>
         </div>
       )}
