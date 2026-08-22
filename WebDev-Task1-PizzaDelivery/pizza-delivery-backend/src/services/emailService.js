@@ -40,6 +40,7 @@ const sendVerificationEmail = async (email, token) => {
             <p>This link expires in 15 minutes.</p>
         `,
     }
+    await transporter.sendMail(mailOptions);
 }
 module.exports = {
     sendVerificationEmail,
