@@ -1,30 +1,36 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
-const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
 
-api.interceptors.request.use((config) => {
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+});
+
+api.interceptors.request.use(
+  (config) => {
     const token = useAuthStore.getState().token;
-    if (token){
-        config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-        return config;
-    },
-    (error) => Promise.reject(error)
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            useAuthStore.getState().logout();
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      useAuthStore.getState().logout();
     }
-)
+    if (error.code === 'ERR_NETWORK') {
+      console.warn('Backend API Network Error: Ensure pizza-delivery-backend server is running on port 5000.');
+    }
+    return Promise.reject(error);
+  }
+);
 
 export { api };
