@@ -77,6 +77,15 @@ const autoSeedData = async () => {
 
 const PORT = process.env.PORT || 5000;
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`⚠️ Port ${PORT} is currently in use by another process. Kill it using: fuser -k 5000/tcp`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+  }
+});
+
 const startServer = async () => {
   await connectDB();
   await autoSeedData();
