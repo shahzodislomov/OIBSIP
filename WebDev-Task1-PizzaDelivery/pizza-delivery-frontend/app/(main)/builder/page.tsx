@@ -20,29 +20,33 @@ interface IngredientItem {
 }
 
 const fallbackIngredients: IngredientItem[] = [
-  // Crusts
+  // 5 Pizza Base / Crust Options
   { _id: 'c1', name: 'Classic Hand Tossed', category: 'crust', price: 0, icon: '🍞' },
   { _id: 'c2', name: 'Thin & Crispy Crust', category: 'crust', price: 20, icon: '🥖' },
   { _id: 'c3', name: 'Cheese Burst Crust', category: 'crust', price: 99, icon: '🧀' },
   { _id: 'c4', name: 'Gluten-Free Crust', category: 'crust', price: 79, icon: '🌾' },
+  { _id: 'c5', name: 'Garlic Butter Stuffed Crust', category: 'crust', price: 89, icon: '🧄' },
 
-  // Sauces
+  // 5 Sauce Options
   { _id: 's1', name: 'Classic Tomato Sauce', category: 'sauce', price: 0, icon: '🍅' },
   { _id: 's2', name: 'Fiery Buffalo Sauce', category: 'sauce', price: 25, icon: '🌶️' },
-  { _id: 's3', name: 'White Garlic Sauce', category: 'sauce', price: 35, icon: '🧄' },
+  { _id: 's3', name: 'Creamy White Garlic Sauce', category: 'sauce', price: 35, icon: '🧄' },
   { _id: 's4', name: 'Basil Pesto Sauce', category: 'sauce', price: 45, icon: '🌿' },
+  { _id: 's5', name: 'Spicy Tangy Marinara Sauce', category: 'sauce', price: 20, icon: '🥫' },
 
-  // Cheeses
+  // Cheese Options
   { _id: 'ch1', name: 'Mozzarella Cheese', category: 'cheese', price: 40, icon: '🧀' },
   { _id: 'ch2', name: 'Cheddar Blend', category: 'cheese', price: 50, icon: '🧀' },
   { _id: 'ch3', name: 'Feta Cheese Crumbles', category: 'cheese', price: 65, icon: '🥛' },
+  { _id: 'ch4', name: 'Smoked Provolone', category: 'cheese', price: 70, icon: '🧀' },
 
-  // Veggies
+  // Veggies (Multiple Select)
   { _id: 'v1', name: 'Fresh Bell Peppers', category: 'veggie', price: 30, icon: '🫑' },
   { _id: 'v2', name: 'Garlic Mushrooms', category: 'veggie', price: 40, icon: '🍄' },
   { _id: 'v3', name: 'Caramelized Onions', category: 'veggie', price: 25, icon: '🧅' },
   { _id: 'v4', name: 'Sliced Black Olives', category: 'veggie', price: 35, icon: '🫒' },
   { _id: 'v5', name: 'Cherry Tomatoes', category: 'veggie', price: 30, icon: '🍅' },
+  { _id: 'v6', name: 'Fresh Jalapeños', category: 'veggie', price: 30, icon: '🌶️' },
 
   // Meats
   { _id: 'm1', name: 'Crispy Pepperoni', category: 'meat', price: 65, icon: '🍖' },
@@ -57,76 +61,82 @@ const sizePrices = {
 };
 
 export default function CustomBuilderPage() {
-  const [ingredients, setIngredients] = useState<IngredientItem[]>([]);
+  const [ingredients, setIngredients] = useState<IngredientItem[]>(fallbackIngredients);
   const [selectedSize, setSelectedSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [selectedCrust, setSelectedCrust] = useState<string>('Classic Hand Tossed');
   const [selectedSauce, setSelectedSauce] = useState<string>('Classic Tomato Sauce');
   const [selectedCheese, setSelectedCheese] = useState<string>('Mozzarella Cheese');
-  const [selectedToppings, setSelectedToppings] = useState<string[]>(['Fresh Bell Peppers', 'Crispy Pepperoni']);
+  const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'crust' | 'sauce' | 'cheese' | 'veggie' | 'meat'>('crust');
 
   const { addItem } = useCartStore();
   const { showToast } = useToast();
 
   useEffect(() => {
-    const fetchInventory = async () => {
+    const fetchIngredients = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/inventory');
-        if (res.data?.ingredients?.length) {
+        if (res.data?.ingredients && res.data.ingredients.length > 0) {
           setIngredients(res.data.ingredients);
         }
       } catch (err) {
-        // Fallback
+        setIngredients(fallbackIngredients);
       }
     };
-    fetchInventory();
+    fetchIngredients();
   }, []);
 
-  const triggerToppingPopAnimation = () => {
-    animate('.pizza-canvas-preview', {
-      scale: [0.95, 1.05, 1],
-      rotate: [0, 4, 0],
-      duration: 500,
-      easing: 'easeOutElastic(1, .5)',
+  const toggleTopping = (toppingName: string) => {
+    setSelectedToppings((prev) => {
+      const exists = prev.includes(toppingName);
+      const next = exists ? prev.filter((t) => t !== toppingName) : [...prev, toppingName];
+
+      const el = document.querySelector('.pizza-canvas-preview');
+      if (el) {
+        animate(el, {
+          scale: [1, 1.04, 1],
+          duration: 300,
+          easing: 'easeOutQuad',
+        });
+      }
+
+      return next;
     });
   };
 
-  const toggleTopping = (name: string) => {
-    if (selectedToppings.includes(name)) {
-      setSelectedToppings(selectedToppings.filter((t) => t !== name));
-    } else {
-      setSelectedToppings([...selectedToppings, name]);
-      triggerToppingPopAnimation();
-    }
+  const calculateTotalPrice = () => {
+    let total = sizePrices[selectedSize];
+
+    const crustObj = ingredients.find((i) => i.name === selectedCrust);
+    if (crustObj) total += crustObj.price;
+
+    const sauceObj = ingredients.find((i) => i.name === selectedSauce);
+    if (sauceObj) total += sauceObj.price;
+
+    const cheeseObj = ingredients.find((i) => i.name === selectedCheese);
+    if (cheeseObj) total += cheeseObj.price;
+
+    selectedToppings.forEach((topName) => {
+      const topObj = ingredients.find((i) => i.name === topName);
+      if (topObj) total += topObj.price;
+    });
+
+    return total;
   };
 
-  // Calculate live price
-  const basePrice = sizePrices[selectedSize];
-  const crustObj = ingredients.find((i) => i.name === selectedCrust);
-  const sauceObj = ingredients.find((i) => i.name === selectedSauce);
-  const cheeseObj = ingredients.find((i) => i.name === selectedCheese);
+  const totalPrice = calculateTotalPrice();
 
-  const crustPrice = crustObj?.price || 0;
-  const saucePrice = sauceObj?.price || 0;
-  const cheesePrice = cheeseObj?.price || 0;
-
-  const toppingsPrice = selectedToppings.reduce((sum, name) => {
-    const topObj = ingredients.find((i) => i.name === name);
-    return sum + (topObj?.price || 0);
-  }, 0);
-
-  const totalPrice = basePrice + crustPrice + saucePrice + cheesePrice + toppingsPrice;
-
-  const handleAddCustomPizzaToCart = () => {
+  const handleAddToCart = () => {
     addItem({
+      pizzaId: `custom_${Date.now()}`,
       name: `Custom ${selectedCrust} Pizza`,
       size: selectedSize,
+      price: totalPrice,
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
       crust: selectedCrust,
       sauce: selectedSauce,
       cheese: selectedCheese,
       extraToppings: selectedToppings,
-      price: totalPrice,
-      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
       quantity: 1,
     });
 
@@ -220,7 +230,7 @@ export default function CustomBuilderPage() {
             </p>
             {selectedToppings.length > 0 && (
               <p className="text-xs text-emerald-400/90 font-medium">
-                Toppings: {selectedToppings.join(', ')}
+                Toppings ({selectedToppings.length}): {selectedToppings.join(', ')}
               </p>
             )}
           </div>
@@ -228,14 +238,14 @@ export default function CustomBuilderPage() {
           <div className="w-full pt-4 border-t border-white/10 flex items-center justify-between">
             <div>
               <span className="text-xs text-stone-400 block">Total Price</span>
-              <span className="text-3xl font-black text-orange-400">{formatPrice(totalPrice)}</span>
+              <span className="text-2xl font-black text-[#e05638]">{formatPrice(totalPrice)}</span>
             </div>
 
             <Button
-              onClick={handleAddCustomPizzaToCart}
+              onClick={handleAddToCart}
               variant="gradient"
               size="lg"
-              className="rounded-2xl gap-2 shadow-xl shadow-orange-500/30"
+              className="rounded-2xl gap-2 font-bold shadow-xl shadow-orange-500/30"
             >
               <ShoppingBag className="w-5 h-5" />
               <span>Add Custom Order</span>
@@ -248,14 +258,14 @@ export default function CustomBuilderPage() {
           {/* Step 1: Size Choice */}
           <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-3">
             <h4 className="text-sm font-bold text-stone-200 uppercase tracking-wider">
-              1. Choose Size
+              Step 1: Choose Size
             </h4>
             <div className="grid grid-cols-3 gap-3">
               {(['small', 'medium', 'large'] as const).map((size) => (
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`p-3.5 rounded-2xl border text-center transition-all ${
+                  className={`p-3.5 rounded-2xl border text-center transition-all cursor-pointer ${
                     selectedSize === size
                       ? 'bg-orange-500/20 border-orange-500 text-white shadow-lg shadow-orange-500/20'
                       : 'bg-stone-900 border-white/10 text-stone-400 hover:text-white'
@@ -279,13 +289,21 @@ export default function CustomBuilderPage() {
               <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
-                className={`px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
+                className={`px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
                   activeTab === cat
-                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/30'
-                    : 'bg-stone-900 text-stone-400 border border-white/10 hover:text-white'
+                    ? 'bg-[#e05638] text-white shadow-md'
+                    : 'bg-[#161620] text-stone-400 border border-white/10 hover:text-white'
                 }`}
               >
-                {cat}
+                {cat === 'crust'
+                  ? `Base (${crusts.length})`
+                  : cat === 'sauce'
+                  ? `Sauce (${sauces.length})`
+                  : cat === 'cheese'
+                  ? `Cheese (${cheeses.length})`
+                  : cat === 'veggie'
+                  ? `Veggies (${veggies.length})`
+                  : `Meats (${meats.length})`}
               </button>
             ))}
           </div>
@@ -294,13 +312,16 @@ export default function CustomBuilderPage() {
           <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
             {activeTab === 'crust' && (
               <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-200">Select Crust Type</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold text-stone-200">Step 1: Choose a Pizza Base</h4>
+                  <Badge variant="accent">5 Options Available</Badge>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {crusts.map((item) => (
                     <button
                       key={item._id}
                       onClick={() => setSelectedCrust(item.name)}
-                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                         selectedCrust === item.name
                           ? 'bg-orange-500/20 border-orange-500 text-white'
                           : 'bg-stone-900/80 border-white/10 text-stone-300 hover:text-white'
@@ -324,13 +345,16 @@ export default function CustomBuilderPage() {
 
             {activeTab === 'sauce' && (
               <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-200">Select House Sauce</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold text-stone-200">Step 2: Choose a Sauce</h4>
+                  <Badge variant="accent">5 Options Available</Badge>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {sauces.map((item) => (
                     <button
                       key={item._id}
                       onClick={() => setSelectedSauce(item.name)}
-                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                         selectedSauce === item.name
                           ? 'bg-orange-500/20 border-orange-500 text-white'
                           : 'bg-stone-900/80 border-white/10 text-stone-300 hover:text-white'
@@ -354,13 +378,16 @@ export default function CustomBuilderPage() {
 
             {activeTab === 'cheese' && (
               <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-200">Select Cheese Base</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold text-stone-200">Step 3: Choose a Cheese Type</h4>
+                  <Badge variant="accent">Select 1 Cheese</Badge>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {cheeses.map((item) => (
                     <button
                       key={item._id}
                       onClick={() => setSelectedCheese(item.name)}
-                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                      className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                         selectedCheese === item.name
                           ? 'bg-orange-500/20 border-orange-500 text-white'
                           : 'bg-stone-900/80 border-white/10 text-stone-300 hover:text-white'
@@ -384,7 +411,10 @@ export default function CustomBuilderPage() {
 
             {activeTab === 'veggie' && (
               <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-200">Add Fresh Veggies</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold text-stone-200">Step 4: Choose Vegetables</h4>
+                  <Badge variant="accent">Multiple Select Checkbox</Badge>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {veggies.map((item) => {
                     const isSelected = selectedToppings.includes(item.name);
@@ -392,7 +422,7 @@ export default function CustomBuilderPage() {
                       <button
                         key={item._id}
                         onClick={() => toggleTopping(item.name)}
-                        className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                        className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-emerald-500/20 border-emerald-500 text-white'
                             : 'bg-stone-900/80 border-white/10 text-stone-300 hover:text-white'
@@ -408,9 +438,11 @@ export default function CustomBuilderPage() {
                           </div>
                         </div>
                         {isSelected ? (
-                          <Check className="w-5 h-5 text-emerald-400" />
+                          <div className="w-5 h-5 rounded-md bg-emerald-500 text-white flex items-center justify-center font-bold text-xs">
+                            ✓
+                          </div>
                         ) : (
-                          <Plus className="w-4 h-4 text-stone-500" />
+                          <div className="w-5 h-5 rounded-md border border-stone-600" />
                         )}
                       </button>
                     );
@@ -421,7 +453,10 @@ export default function CustomBuilderPage() {
 
             {activeTab === 'meat' && (
               <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-200">Add Gourmet Meats</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold text-stone-200">Add Premium Meats</h4>
+                  <Badge variant="accent">Multiple Select Checkbox</Badge>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {meats.map((item) => {
                     const isSelected = selectedToppings.includes(item.name);
@@ -429,9 +464,9 @@ export default function CustomBuilderPage() {
                       <button
                         key={item._id}
                         onClick={() => toggleTopping(item.name)}
-                        className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                        className={`p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-amber-500/20 border-amber-500 text-white'
+                            ? 'bg-emerald-500/20 border-emerald-500 text-white'
                             : 'bg-stone-900/80 border-white/10 text-stone-300 hover:text-white'
                         }`}
                       >
@@ -445,9 +480,11 @@ export default function CustomBuilderPage() {
                           </div>
                         </div>
                         {isSelected ? (
-                          <Check className="w-5 h-5 text-amber-400" />
+                          <div className="w-5 h-5 rounded-md bg-emerald-500 text-white flex items-center justify-center font-bold text-xs">
+                            ✓
+                          </div>
                         ) : (
-                          <Plus className="w-4 h-4 text-stone-500" />
+                          <div className="w-5 h-5 rounded-md border border-stone-600" />
                         )}
                       </button>
                     );

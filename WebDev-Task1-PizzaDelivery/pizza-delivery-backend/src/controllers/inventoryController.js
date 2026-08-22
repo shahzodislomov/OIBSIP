@@ -1,17 +1,19 @@
 const Ingredient = require('../models/Ingredient');
 
 const initialIngredients = [
-  // Crusts
+  // Crusts (5 Options)
   { name: 'Classic Hand Tossed', category: 'crust', price: 0, stockQuantity: 200, minStockThreshold: 30, unit: 'doughs', icon: '🍞' },
   { name: 'Thin & Crispy Crust', category: 'crust', price: 20, stockQuantity: 150, minStockThreshold: 25, unit: 'doughs', icon: '🥖' },
   { name: 'Cheese Burst Crust', category: 'crust', price: 99, stockQuantity: 120, minStockThreshold: 20, unit: 'doughs', icon: '🧀' },
   { name: 'Gluten-Free Crust', category: 'crust', price: 79, stockQuantity: 80, minStockThreshold: 15, unit: 'doughs', icon: '🌾' },
+  { name: 'Garlic Butter Stuffed Crust', category: 'crust', price: 89, stockQuantity: 100, minStockThreshold: 15, unit: 'doughs', icon: '🧄' },
 
-  // Sauces
+  // Sauces (5 Options)
   { name: 'Classic Tomato Sauce', category: 'sauce', price: 0, stockQuantity: 500, minStockThreshold: 50, unit: 'portions', icon: '🍅' },
   { name: 'Fiery Buffalo Sauce', category: 'sauce', price: 25, stockQuantity: 300, minStockThreshold: 40, unit: 'portions', icon: '🌶️' },
   { name: 'Creamy White Garlic Sauce', category: 'sauce', price: 35, stockQuantity: 250, minStockThreshold: 30, unit: 'portions', icon: '🧄' },
   { name: 'Basil Pesto Sauce', category: 'sauce', price: 45, stockQuantity: 180, minStockThreshold: 25, unit: 'portions', icon: '🌿' },
+  { name: 'Spicy Tangy Marinara Sauce', category: 'sauce', price: 20, stockQuantity: 280, minStockThreshold: 30, unit: 'portions', icon: '🥫' },
 
   // Cheeses
   { name: 'Mozzarella Cheese', category: 'cheese', price: 40, stockQuantity: 400, minStockThreshold: 60, unit: 'grams', icon: '🧀' },
@@ -19,7 +21,7 @@ const initialIngredients = [
   { name: 'Feta Cheese Crumbles', category: 'cheese', price: 65, stockQuantity: 150, minStockThreshold: 20, unit: 'grams', icon: '🥛' },
   { name: 'Smoked Provolone', category: 'cheese', price: 70, stockQuantity: 120, minStockThreshold: 20, unit: 'grams', icon: '🧀' },
 
-  // Veggies
+  // Veggies (Multiple Select)
   { name: 'Fresh Bell Peppers', category: 'veggie', price: 30, stockQuantity: 250, minStockThreshold: 30, unit: 'grams', icon: '🫑' },
   { name: 'Garlic Butter Mushrooms', category: 'veggie', price: 40, stockQuantity: 200, minStockThreshold: 25, unit: 'grams', icon: '🍄' },
   { name: 'Caramelized Red Onions', category: 'veggie', price: 25, stockQuantity: 300, minStockThreshold: 35, unit: 'grams', icon: '🧅' },
