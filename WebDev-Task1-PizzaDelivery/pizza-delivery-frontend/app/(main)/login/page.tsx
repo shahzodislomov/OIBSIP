@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Shield, ArrowRight, Pizza, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Pizza, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
@@ -19,19 +19,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-
-  const handleAdminDemoLogin = () => {
-    const adminUser = {
-      _id: 'admin_1',
-      name: 'Chef Admin',
-      email: 'admin@pizzacraft.com',
-      role: 'admin',
-      isAdmin: true,
-    };
-    setAuth(adminUser, 'admin_jwt_token_999');
-    showToast('Admin Logged In', 'Welcome to PizzaCraft Admin Dashboard', 'success');
-    router.push('/admin');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,17 +107,6 @@ export default function LoginPage() {
           >
             <span>Sign In</span>
             <ArrowRight className="w-4 h-4" />
-          </Button>
-
-          <Button
-            type="button"
-            onClick={handleAdminDemoLogin}
-            variant="outline"
-            size="md"
-            className="w-full rounded-2xl gap-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/10 mt-2"
-          >
-            <Shield className="w-4 h-4 text-amber-400" />
-            <span>Sign In as Admin (One Click)</span>
           </Button>
         </form>
 
