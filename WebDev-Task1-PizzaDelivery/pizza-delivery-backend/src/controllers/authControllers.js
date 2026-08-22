@@ -7,13 +7,13 @@ const { sendVerificationEmail } = require("../services/emailService");
 const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        
-        if(!name || !email || !password) {
+
+        if (!name || !email || !password) {
             return res.status(400).json({ message: "Please provide name, email, and password" });
         }
         const existingUser = await User.findOne({ email });
-        
-        if(existingUser) {
+
+        if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,7 +27,7 @@ const register = async (req, res) => {
         })
         await sendVerificationEmail(user.email, user.emailVerificationToken);
         res.status(201).json({
-            message: "User registered successfully", 
+            message: "User registered successfully",
             user: {
                 id: user._id,
                 name: user.name,
@@ -44,15 +44,15 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if(!email || !password) {
+        if (!email || !password) {
             return res.status(400).json({ message: "email and password are required" });
         }
         const user = await User.findOne({ email });
-        if(!user) {
+        if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) {
+        if (!isMatch) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         if (!user.isEmailVerified) {
@@ -86,7 +86,7 @@ const verifyEmail = async (req, res) => {
             return res.status(400).json({ message: "Verification token is required" });
         }
         const user = await User.findOne({ emailVerificationToken: token, emailVerificationExpires: { $gt: Date.now() } });
-        if (!user){
+        if (!user) {
             return res.status(400).json({ message: "Invalid or expired verification token" })
         }
         user.isEmailVerified = true;
@@ -100,8 +100,78 @@ const verifyEmail = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+        user.passwordResetToken = hashedResetToken;
+        user.passwordResetExpires = Date.now() + 15 * 60 * 1000;
+        await user.save();
+        await sendPasswordResetEmail(user.email, resetToken);
+        res.json({ message: "Password reset email sent" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).json({
+                message: "Token and password are required",
+            });
+        }
+        if (password.length < 6) {
+            return res.status(400).json({
+                message: "Password must be at least 6 characters",
+            });
+        }
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
+        const user = await User.findOne({
+            passwordResetToken: hashedToken,
+            passwordResetExpires: {
+                $gt: Date.now(),
+            },
+        });
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid or expired reset token",
+            });
+        }
+        user.password = await bcrypt.hash(password, 10);
+        user.passwordResetToken = null;
+        user.passwordResetExpires = null;
+        await user.save();
+        res.json({
+            message: "Password reset successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Server error",
+        });
+    }
+};
+
 module.exports = {
     register,
     login,
     verifyEmail,
+    forgotPassword,
+    resetPassword
 };
