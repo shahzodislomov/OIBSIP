@@ -1,25 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #08080d;
-  --foreground: #faf8f5;
-  --primary: #f97316;
+  --background: #0d0d12;
+  --foreground: #f4f3f0;
+  --primary: #e05638;
   --primary-foreground: #ffffff;
-  --primary-hover: #ea580c;
-  --secondary: #181724;
-  --secondary-foreground: #fed7aa;
-  --accent: #fbbf24;
-  --accent-glow: rgba(251, 191, 36, 0.25);
-  --muted: #12111d;
-  --muted-foreground: #a19da8;
-  --card: rgba(18, 17, 27, 0.78);
-  --card-border: rgba(255, 255, 255, 0.09);
-  --popover: #12111d;
-  --popover-foreground: #faf8f5;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #f97316;
-  --radius: 0.75rem;
+  --primary-hover: #c8462b;
+  --secondary: #161620;
+  --secondary-foreground: #e4e2dd;
+  --accent: #d97706;
+  --muted: #111119;
+  --muted-foreground: #9ca3af;
+  --card: rgba(22, 22, 32, 0.75);
+  --card-border: rgba(255, 255, 255, 0.07);
+  --popover: #161620;
+  --popover-foreground: #f4f3f0;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.06);
+  --ring: #e05638;
+  --radius: 1rem;
 
   --font-geist-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-geist-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
@@ -48,10 +47,10 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(249, 115, 22, 0.14), transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(225, 29, 72, 0.08), transparent 40%),
-    linear-gradient(180deg, #08080d 0%, #100f1a 50%, #060609 100%);
+  background-color: #0d0d12;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(224, 86, 56, 0.08), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(217, 119, 6, 0.04), transparent 40%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans);
@@ -61,93 +60,50 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #08080d;
+  background: #0d0d12;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1c1b2b;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #222230;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #f97316;
+  background: #e05638;
 }
 
 ::selection {
-  background: rgba(249, 115, 22, 0.4);
+  background: rgba(224, 86, 56, 0.3);
   color: #ffffff;
 }
 
-/* Glassmorphism Utilities */
+/* Bespoke Card & Panel Utilities */
 .glass-panel {
-  background: rgba(18, 17, 27, 0.76);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  background: rgba(20, 20, 29, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
 .glass-panel-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
 }
 
 .glass-panel-hover:hover {
-  background: rgba(26, 24, 38, 0.88);
-  border-color: rgba(249, 115, 22, 0.35);
-  box-shadow: 0 20px 50px rgba(249, 115, 22, 0.15), 0 0 20px rgba(249, 115, 22, 0.1);
-  transform: translateY(-3px);
-}
-
-.glow-orange {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.45);
-}
-
-.glow-crimson {
-  box-shadow: 0 0 30px rgba(225, 29, 72, 0.4);
+  background: rgba(26, 26, 38, 0.85);
+  border-color: rgba(224, 86, 56, 0.25);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #fed7aa 50%, #f97316 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f4f3f0 60%, #e05638 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-accent {
-  background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #e11d48 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Animations */
-@keyframes floatSlow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(2deg); }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.04); }
-}
-
-@keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.animate-float {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
-}
-
-.animate-spin-slow {
-  animation: spinSlow 45s linear infinite;
 }
