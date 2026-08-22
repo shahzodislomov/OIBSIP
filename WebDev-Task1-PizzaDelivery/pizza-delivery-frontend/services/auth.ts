@@ -34,3 +34,13 @@ export const verifyEmail = async (token: string) => {
 
   return data;
 };
+
+export const forgotPassword = async (email: string) => {
+  const { data } = await api.post("/auth/forgot-password", { email });
+  return data;
+};
+
+export const resetPassword = async (payload: { token: string; password: string }) => {
+  const { data } = await api.post("/auth/reset-password", payload);
+  return data;
+};
