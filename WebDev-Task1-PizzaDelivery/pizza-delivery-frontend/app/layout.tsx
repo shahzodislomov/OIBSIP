@@ -1,17 +1,24 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Providers from "@/components/Providers";
+import type { Metadata } from 'next';
+import './globals.css';
+import Providers from '@/components/Providers';
+import { ToastProvider } from '@/components/ui/toast';
+import { CartDrawer } from '@/components/cart-drawer';
 
 export const metadata: Metadata = {
-  title: "Slice Society | Pizza Delivery & Dining",
-  description: "Modern pizza delivery storefront with beautifully designed pages and animated experiences.",
+  title: 'PizzaCraft | Artisanal Stone-Fired Pizza Delivery',
+  description: 'Order wood-fired artisanal pizzas online with custom pizza builder, real-time live order tracking, and fast delivery.',
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full bg-[#120d0b] text-white">
-        <Providers>{children}</Providers>
+      <body className="min-h-full text-white">
+        <Providers>
+          <ToastProvider>
+            {children}
+            <CartDrawer />
+          </ToastProvider>
+        </Providers>
       </body>
     </html>
   );

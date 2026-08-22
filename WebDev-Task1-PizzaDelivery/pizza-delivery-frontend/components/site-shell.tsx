@@ -1,116 +1,67 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
+'use client';
 
-export function SiteShell({
-  children,
-  variant = "main",
-}: {
-  children: ReactNode;
-  variant?: "main" | "admin";
-}) {
-  const mainLinks = [
-    { href: "/", label: "Home" },
-    { href: "/menu", label: "Menu" },
-    { href: "/search", label: "Search" },
-    { href: "/favorites", label: "Favorites" },
-    { href: "/orders", label: "Orders" },
-  ];
+import React from 'react';
+import Link from 'next/link';
+import { SiteHeader } from '@/components/site-header';
+import { Pizza } from 'lucide-react';
 
-  const adminLinks = [
-    { href: "/admin", label: "Dashboard" },
-    { href: "/admin/orders", label: "Orders" },
-    { href: "/admin/products", label: "Products" },
-    { href: "/admin/customers", label: "Customers" },
-  ];
-
-  const links = variant === "main" ? mainLinks : adminLinks;
-
+export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#120d0b] text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,180,87,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(235,71,47,0.12),transparent_25%)]" />
+    <div className="min-h-screen flex flex-col justify-between">
+      <SiteHeader />
 
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#120d0b]/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href={variant === "main" ? "/" : "/admin"} className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#ffb347] via-[#ff7b54] to-[#ef4444] text-lg shadow-[0_0_30px_rgba(255,135,82,0.7)]">
-              🍕
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.32em] text-[#ffca7a]">Pizza Atelier</p>
-              <h1 className="text-lg font-black tracking-wide text-white">Slice Society</h1>
-            </div>
-          </Link>
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10">
+        {children}
+      </main>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-white/75 md:flex">
-            {links.map((item) => (
-              <Link key={item.href} href={item.href} className="transition hover:text-white">
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            {variant === "main" ? (
-              <>
-                <Link href="/login" className="hidden rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-[#ffb347]/60 hover:text-white sm:inline-flex">
-                  Login
-                </Link>
-                <Link href="/cart" className="inline-flex items-center gap-2 rounded-full bg-[#ffb347] px-4 py-2 text-sm font-bold text-[#1b120e] shadow-[0_12px_40px_rgba(255,179,71,0.45)] transition hover:-translate-y-0.5 hover:bg-[#ffc95e]">
-                  Cart (3)
-                </Link>
-              </>
-            ) : (
-              <Link href="/" className="rounded-full border border-[#ffb347]/35 bg-[#ffb347]/10 px-4 py-2 text-sm font-semibold text-[#ffcf86] transition hover:bg-[#ffb347]/20">
-                View storefront
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <main className="relative z-10 mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">{children}</main>
-
-      <footer className="relative z-10 border-t border-white/10 bg-[#140d09] text-white/70">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
-          <div>
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#ffb347] via-[#ff7b54] to-[#ef4444] text-sm">🍕</div>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.28em] text-[#ffca7a]">Fresh daily</p>
-                <h2 className="text-base font-bold text-white">Slice Society</h2>
+      <footer className="border-t border-white/10 glass-panel bg-stone-950/90 text-stone-400 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center text-white">
+                <Pizza className="w-5 h-5" />
               </div>
+              <span className="font-black text-white text-lg tracking-tight">PIZZACRAFT</span>
             </div>
-            <p className="max-w-xs text-sm leading-7 text-white/60">
-              Slow-fired dough, bold toppings, and late-night comfort food made for memorable evenings.
+            <p className="text-xs leading-relaxed text-stone-400">
+              Artisanal stone-fired pizzas crafted with 48-hour fermented dough and small-batch house marinara.
             </p>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white/80">Explore</h3>
-            <ul className="space-y-3 text-sm text-white/60">
-              <li><Link href="/menu">Menu</Link></li>
-              <li><Link href="/search">Find a pizza</Link></li>
-              <li><Link href="/favorites">Favorites</Link></li>
+            <h4 className="font-bold text-xs text-stone-200 uppercase tracking-wider mb-3">Quick Navigation</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/" className="hover:text-orange-400 transition-colors">Home Storefront</Link></li>
+              <li><Link href="/menu" className="hover:text-orange-400 transition-colors">Full Menu</Link></li>
+              <li><Link href="/builder" className="hover:text-orange-400 transition-colors">Custom Pizza Builder</Link></li>
+              <li><Link href="/orders" className="hover:text-orange-400 transition-colors">Live Order History</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white/80">Support</h3>
-            <ul className="space-y-3 text-sm text-white/60">
-              <li><Link href="/profile">Account</Link></li>
-              <li><Link href="/checkout">Checkout</Link></li>
-              <li><Link href="/verify-email">Verify email</Link></li>
+            <h4 className="font-bold text-xs text-stone-200 uppercase tracking-wider mb-3">Customer Support</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/profile" className="hover:text-orange-400 transition-colors">Account Settings</Link></li>
+              <li><Link href="/checkout" className="hover:text-orange-400 transition-colors">Checkout & Delivery</Link></li>
+              <li><Link href="/login" className="hover:text-orange-400 transition-colors">Sign In / Register</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white/80">Hours</h3>
-            <ul className="space-y-3 text-sm text-white/60">
-              <li>Mon–Thu: 11:00–23:00</li>
-              <li>Fri–Sat: 11:00–01:00</li>
-              <li>Sunday: 12:00–22:00</li>
+            <h4 className="font-bold text-xs text-stone-200 uppercase tracking-wider mb-3">Opening Hours</h4>
+            <ul className="space-y-1.5 text-xs text-stone-400">
+              <li>Mon - Thu: 11:00 AM - 11:00 PM</li>
+              <li>Fri - Sat: 11:00 AM - 01:00 AM (Late Night)</li>
+              <li>Sun: 12:00 PM - 10:00 PM</li>
             </ul>
           </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center text-[11px] text-stone-500">
+          <p>© {new Date().getFullYear()} PizzaCraft Inc. All rights reserved.</p>
+          <p className="flex items-center gap-1 mt-2 sm:mt-0">
+            Crafted with <span className="text-orange-500">🔥</span> for Oasis Infobyte Internship
+          </p>
         </div>
       </footer>
     </div>
