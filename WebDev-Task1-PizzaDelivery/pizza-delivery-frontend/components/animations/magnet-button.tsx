@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import anime from 'animejs';
+import React, { useRef } from 'react';
+import { animate } from 'animejs';
 import { cn } from '@/lib/utils';
 
 interface MagnetButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -17,7 +17,6 @@ export const MagnetButton: React.FC<MagnetButtonProps> = ({
   ...props
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return;
@@ -28,8 +27,7 @@ export const MagnetButton: React.FC<MagnetButtonProps> = ({
     const distanceX = (e.clientX - centerX) * magnetStrength;
     const distanceY = (e.clientY - centerY) * magnetStrength;
 
-    anime({
-      targets: buttonRef.current,
+    animate(buttonRef.current, {
       translateX: distanceX,
       translateY: distanceY,
       duration: 300,
@@ -39,8 +37,7 @@ export const MagnetButton: React.FC<MagnetButtonProps> = ({
 
   const handleMouseLeave = () => {
     if (!buttonRef.current) return;
-    anime({
-      targets: buttonRef.current,
+    animate(buttonRef.current, {
       translateX: 0,
       translateY: 0,
       duration: 600,

@@ -1,21 +1,21 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import anime from 'animejs';
+import { animate, stagger } from 'animejs';
 import { cn } from '@/lib/utils';
 
 interface SplitTextProps {
   text: string;
   className?: string;
   delay?: number;
-  stagger?: number;
+  staggerStep?: number;
 }
 
 export const SplitText: React.FC<SplitTextProps> = ({
   text,
   className,
   delay = 100,
-  stagger = 30,
+  staggerStep = 30,
 }) => {
   const containerRef = useRef<HTMLHeadingElement>(null);
 
@@ -23,16 +23,14 @@ export const SplitText: React.FC<SplitTextProps> = ({
     if (!containerRef.current) return;
     const letters = containerRef.current.querySelectorAll('.split-char');
 
-    anime.timeline().add({
-      targets: letters,
+    animate(letters, {
       translateY: [40, 0],
-      translateZ: 0,
       opacity: [0, 1],
       easing: 'easeOutExpo',
       duration: 800,
-      delay: (el, i) => delay + i * stagger,
+      delay: stagger(staggerStep, { start: delay }),
     });
-  }, [text, delay, stagger]);
+  }, [text, delay, staggerStep]);
 
   const words = text.split(' ');
 

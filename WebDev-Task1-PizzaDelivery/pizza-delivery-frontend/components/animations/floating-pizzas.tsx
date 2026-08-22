@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import anime from 'animejs';
+import { animate } from 'animejs';
 
 export const FloatingPizzas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,14 +11,12 @@ export const FloatingPizzas: React.FC = () => {
 
     const items = containerRef.current.querySelectorAll('.floating-pizza-item');
 
-    anime({
-      targets: items,
-      translateY: () => anime.random(-30, 30),
-      translateX: () => anime.random(-25, 25),
-      rotate: () => anime.random(-180, 180),
-      scale: () => anime.random(0.85, 1.15),
-      duration: () => anime.random(4000, 8000),
-      direction: 'alternate',
+    animate(items, {
+      translateY: [-20, 20],
+      translateX: [-15, 15],
+      rotate: [-15, 15],
+      duration: 6000,
+      alternate: true,
       loop: true,
       easing: 'easeInOutSine',
     });

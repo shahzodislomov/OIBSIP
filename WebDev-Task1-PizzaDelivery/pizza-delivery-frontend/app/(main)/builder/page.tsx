@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Check, Plus, Minus, RotateCcw, ShoppingBag, Flame } from 'lucide-react';
-import anime from 'animejs';
+import { animate } from 'animejs';
 import { SpotlightCard } from '@/components/animations/spotlight-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -83,8 +83,7 @@ export default function CustomBuilderPage() {
   }, []);
 
   const triggerToppingPopAnimation = () => {
-    anime({
-      targets: '.pizza-canvas-preview',
+    animate('.pizza-canvas-preview', {
       scale: [0.95, 1.05, 1],
       rotate: [0, 4, 0],
       duration: 500,

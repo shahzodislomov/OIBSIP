@@ -1,8 +1,10 @@
 export interface User {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  role?: string;
+  isAdmin?: boolean;
 }
 
 export interface AuthResponse {

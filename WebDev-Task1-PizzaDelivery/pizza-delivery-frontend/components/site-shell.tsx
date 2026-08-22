@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { SiteHeader } from '@/components/site-header';
 import { Pizza } from 'lucide-react';
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({ children, variant }: { children: React.ReactNode; variant?: 'main' | 'admin' }) {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <SiteHeader />

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Clock, ChevronRight, Replay, Package } from 'lucide-react';
+import { ShoppingBag, Clock, ChevronRight, RefreshCw, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { SpotlightCard } from '@/components/animations/spotlight-card';
 import { Button } from '@/components/ui/button';
