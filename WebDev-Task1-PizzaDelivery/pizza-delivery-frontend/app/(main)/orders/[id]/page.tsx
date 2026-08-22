@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Clock, CheckCircle2, Truck, Flame, ChefHat, PackageCheck, AlertCircle } from 'lucide-react';
+import { Clock, CheckCircle2, Truck, Flame, ChefHat, PackageCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { io } from 'socket.io-client';
 import { Badge } from '@/components/ui/badge';
@@ -36,11 +36,12 @@ const statusSteps = [
 
 export default function OrderTrackerPage() {
   const params = useParams();
-  const orderId = (params?.id as string) || 'mock_order_1';
+  const orderId = (params?.id as string) || 'ord_demo_1';
+  const [isMounted, setIsMounted] = useState(false);
 
   const [order, setOrder] = useState<OrderDetail>({
     _id: orderId,
-    orderNumber: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+    orderNumber: 'ORD-888888',
     orderStatus: 'Preparing',
     paymentStatus: 'Paid',
     paymentMethod: 'Razorpay',
@@ -57,7 +58,7 @@ export default function OrderTrackerPage() {
     items: [
       { name: 'Truffle Mushroom Gourmet', size: 'medium', quantity: 1, price: 579, extraToppings: ['Ricotta'] },
     ],
-    createdAt: new Date().toISOString(),
+    createdAt: '2026-08-22T10:00:00.000Z',
   });
 
   const getCurrentStepIndex = () => {
@@ -65,6 +66,8 @@ export default function OrderTrackerPage() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+
     // 1. Fetch order details from API
     const fetchOrder = async () => {
       try {
@@ -73,7 +76,7 @@ export default function OrderTrackerPage() {
           setOrder(res.data.order);
         }
       } catch (e) {
-        // Mock fallback
+        // Fallback
       }
     };
     fetchOrder();
@@ -115,47 +118,62 @@ export default function OrderTrackerPage() {
             <Clock className="w-3.5 h-3.5" /> Real-time Live Tracking
           </Badge>
           <h1 className="text-3xl font-black text-white">Order {order.orderNumber}</h1>
-          <p className="text-xs text-stone-400 mt-1">Placed on {new Date(order.createdAt).toLocaleTimeString()}</p>
+          <p className="text-xs text-stone-400 mt-1">
+            {isMounted ? `Placed at ${new Date(order.createdAt).toLocaleTimeString()}` : 'Live Order Tracking'}
+          </p>
         </div>
 
-        <div className="flex flex-col items-end">
-          <span className="text-xs text-stone-400">Est. Arrival Time</span>
-          <span className="text-2xl font-black text-orange-400">
-            <DecryptedText text="~ 25 MINS" />
-          </span>
+        <div className="flex items-center gap-3">
+          <Badge variant={order.orderStatus === 'Delivered' ? 'success' : 'accent'} className="text-sm px-4 py-1.5 font-bold">
+            {order.orderStatus}
+          </Badge>
         </div>
       </section>
 
-      {/* Live Timeline Tracker */}
+      {/* Real-time Status Progress Timeline */}
       <section className="glass-panel p-8 rounded-3xl border border-white/10 space-y-8">
-        <h3 className="font-bold text-lg text-white">Live Order Progress</h3>
+        <div className="flex justify-between items-center border-b border-white/10 pb-4">
+          <h2 className="text-lg font-bold text-white">Live Kitchen & Delivery Status</h2>
+          <span className="text-xs text-stone-400 font-mono">
+            Status: <DecryptedText text={order.orderStatus} />
+          </span>
+        </div>
 
-        {/* Step Progress Line */}
-        <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="relative flex flex-col md:flex-row justify-between gap-6 md:gap-0">
+          {/* Progress Bar Line */}
+          <div className="hidden md:block absolute top-6 left-8 right-8 h-1 bg-stone-800 -z-0">
+            <div
+              className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-700"
+              style={{
+                width: `${(Math.max(0, currentStep) / (statusSteps.length - 1)) * 100}%`,
+              }}
+            />
+          </div>
+
           {statusSteps.map((step, idx) => {
-            const Icon = step.icon;
-            const isDone = idx <= currentStep;
+            const isCompleted = idx <= currentStep;
             const isCurrent = idx === currentStep;
+            const StepIcon = step.icon;
 
             return (
-              <div key={step.key} className="flex md:flex-col items-center gap-3 relative z-10 text-left md:text-center flex-1">
+              <div key={step.key} className="relative z-10 flex md:flex-col items-center gap-4 md:gap-2 text-left md:text-center flex-1">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border ${
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300 ${
                     isCurrent
-                      ? 'bg-orange-500 text-white border-orange-400 shadow-xl shadow-orange-500/40 animate-pulse scale-110'
-                      : isDone
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                      : 'bg-stone-900 text-stone-600 border-white/10'
+                      ? 'bg-orange-500 text-white border-orange-400 shadow-lg shadow-orange-500/40 scale-110 ring-4 ring-orange-500/20'
+                      : isCompleted
+                      ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                      : 'bg-stone-900 text-stone-600 border-white/5'
                   }`}
                 >
-                  <Icon className="w-6 h-6" />
+                  <StepIcon className="w-5 h-5" />
                 </div>
 
                 <div>
-                  <h4 className={`text-xs font-bold ${isDone ? 'text-white' : 'text-stone-500'}`}>
+                  <h4 className={`text-xs font-bold ${isCompleted ? 'text-white' : 'text-stone-500'}`}>
                     {step.label}
                   </h4>
-                  <p className="text-[10px] text-stone-400 hidden sm:block max-w-[120px] mt-0.5">
+                  <p className="text-[11px] text-stone-400 hidden md:block max-w-[120px] mx-auto mt-0.5">
                     {step.desc}
                   </p>
                 </div>
@@ -165,24 +183,27 @@ export default function OrderTrackerPage() {
         </div>
       </section>
 
-      {/* Itemized Invoice & Address */}
+      {/* Order Summary Grid */}
       <div className="grid md:grid-cols-2 gap-6">
         <SpotlightCard className="p-6 rounded-3xl space-y-4">
           <h3 className="font-bold text-stone-100 border-b border-white/10 pb-2">Items Ordered</h3>
           <div className="space-y-3">
             {order.items.map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center text-xs">
+              <div key={idx} className="flex justify-between items-start text-xs">
                 <div>
-                  <span className="font-bold text-orange-400">{item.quantity}x </span>
-                  <span className="font-semibold text-stone-200">{item.name}</span>
-                  <span className="text-[10px] text-stone-400 capitalize block">{item.size}</span>
+                  <p className="font-bold text-white">
+                    {item.quantity}x {item.name} ({item.size})
+                  </p>
+                  {item.extraToppings && item.extraToppings.length > 0 && (
+                    <p className="text-[10px] text-stone-400">+ {item.extraToppings.join(', ')}</p>
+                  )}
                 </div>
-                <span className="font-mono text-stone-200">{formatPrice(item.price * item.quantity)}</span>
+                <span className="font-mono text-orange-400 font-bold">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
 
-          <div className="pt-3 border-t border-white/10 space-y-1 text-xs">
+          <div className="pt-4 border-t border-white/10 space-y-1.5 text-xs">
             <div className="flex justify-between text-stone-400">
               <span>Subtotal</span>
               <span>{formatPrice(order.subtotal)}</span>

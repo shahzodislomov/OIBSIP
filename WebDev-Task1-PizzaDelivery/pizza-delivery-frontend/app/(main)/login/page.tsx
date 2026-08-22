@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, LogIn, ArrowRight, Pizza } from 'lucide-react';
+import { Mail, Lock, Shield, ArrowRight, Pizza } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
@@ -20,6 +20,19 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const handleAdminDemoLogin = () => {
+    const adminUser = {
+      _id: 'admin_1',
+      name: 'Chef Admin',
+      email: 'admin@pizzacraft.com',
+      role: 'admin',
+      isAdmin: true,
+    };
+    setAuth(adminUser, 'admin_jwt_token_999');
+    showToast('Admin Logged In', 'Welcome to PizzaCraft Admin Dashboard', 'success');
+    router.push('/admin');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -30,9 +43,12 @@ export default function LoginPage() {
       if (res.data?.user && res.data?.token) {
         setAuth(res.data.user, res.data.token);
         showToast('Welcome back!', `Signed in as ${res.data.user.name}`, 'success');
-        router.push('/');
+        if (res.data.user.role === 'admin' || res.data.user.isAdmin) {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
       } else {
-        // Fallback for test mode
         const dummyUser = {
           _id: 'u1',
           name: email.split('@')[0] || 'Pizza Lover',
@@ -41,10 +57,9 @@ export default function LoginPage() {
         };
         setAuth(dummyUser, 'mock_jwt_token_123');
         showToast('Signed In', 'Logged in successfully', 'success');
-        router.push('/');
+        router.push(dummyUser.role === 'admin' ? '/admin' : '/');
       }
     } catch (err: any) {
-      // Fallback demo auth for test convenience
       const dummyUser = {
         _id: 'u1',
         name: email.split('@')[0] || 'Pizza Lover',
@@ -53,7 +68,7 @@ export default function LoginPage() {
       };
       setAuth(dummyUser, 'mock_jwt_token_123');
       showToast('Signed In', 'Logged in successfully', 'success');
-      router.push('/');
+      router.push(dummyUser.role === 'admin' ? '/admin' : '/');
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +82,7 @@ export default function LoginPage() {
             <Pizza className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-black text-white">Welcome Back</h1>
-          <p className="text-xs text-stone-400">Sign in to track orders & earn slice rewards</p>
+          <p className="text-xs text-stone-400">Sign in to track orders & access admin dashboard</p>
         </div>
 
         {errorMsg && (
@@ -115,6 +130,17 @@ export default function LoginPage() {
           >
             <span>Sign In</span>
             <ArrowRight className="w-4 h-4" />
+          </Button>
+
+          <Button
+            type="button"
+            onClick={handleAdminDemoLogin}
+            variant="outline"
+            size="md"
+            className="w-full rounded-2xl gap-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/10 mt-2"
+          >
+            <Shield className="w-4 h-4 text-amber-400" />
+            <span>Sign In as Admin (One Click)</span>
           </Button>
         </form>
 
