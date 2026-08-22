@@ -195,18 +195,15 @@ export default function CustomBuilderPage() {
                 >
                   {/* Cheese Layer */}
                   <div className="absolute inset-2 rounded-full bg-amber-200/80 backdrop-blur-[1px] flex items-center justify-center flex-wrap p-4 gap-3">
-                    {/* Render Selected Toppings icons */}
-                    {selectedToppings.map((topName, idx) => {
-                      const topObj = ingredients.find((i) => i.name === topName);
-                      return (
-                        <span
-                          key={idx}
-                          className="text-2xl animate-bounce filter drop-shadow-md transition-transform"
-                        >
-                          {topObj?.icon || '🍕'}
-                        </span>
-                      );
-                    })}
+                    {/* Render Selected Toppings Badges */}
+                    {selectedToppings.map((topName, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2.5 py-1 rounded-xl bg-orange-950/90 text-orange-200 border border-orange-500/40 text-[11px] font-bold shadow-md animate-in zoom-in-75 duration-300"
+                      >
+                        + {topName}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
