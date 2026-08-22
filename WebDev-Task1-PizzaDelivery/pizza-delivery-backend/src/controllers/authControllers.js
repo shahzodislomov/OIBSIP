@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const crypto = require("crypto");
+const { sendVerificationEmail } = require("../services/emailService");
 
 const register = async (req, res) => {
     try {
@@ -15,11 +17,15 @@ const register = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+        const verificationToken = crypto.randomBytes(32).toString("hex");
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
+            emailVerificationToken: verificationToken,
+            emailVerificationExpires: Date.now() + 3600000, // 1 hour
         })
+        await sendVerificationEmail(user.email, user.emailVerificationToken);
         res.status(201).json({
             message: "User registered successfully", 
             user: {
@@ -68,9 +74,31 @@ const login = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Server error" });
     }
+}
+
+const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).json({ message: "Verification token is required" });
+        }
+        const user = await User.findOne({ emailVerificationToken: token, emailVerificationExpires: { $gt: Date.now() } });
+        if (!user){
+            return res.status(400).json({ message: "Invalid or expired verification token" })
+        }
+        user.isverified = true;
+        user.emailVerificationToken = null;
+        user.emailVerificationExpires = null;
+        await user.save();
+        res.json({ message: "Email verified successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
     }
+}
 
 module.exports = {
     register,
     login,
+    verifyEmail,
 };
