@@ -10,7 +10,7 @@ const initialIngredients = [
   // Sauces
   { name: 'Classic Tomato Sauce', category: 'sauce', price: 0, stockQuantity: 500, minStockThreshold: 50, unit: 'portions', icon: '🍅' },
   { name: 'Fiery Buffalo Sauce', category: 'sauce', price: 25, stockQuantity: 300, minStockThreshold: 40, unit: 'portions', icon: '🌶️' },
-  { name: 'Creamy White Garlic Garlic Sauce', category: 'sauce', price: 35, stockQuantity: 250, minStockThreshold: 30, unit: 'portions', icon: '🧄' },
+  { name: 'Creamy White Garlic Sauce', category: 'sauce', price: 35, stockQuantity: 250, minStockThreshold: 30, unit: 'portions', icon: '🧄' },
   { name: 'Basil Pesto Sauce', category: 'sauce', price: 45, stockQuantity: 180, minStockThreshold: 25, unit: 'portions', icon: '🌿' },
 
   // Cheeses
