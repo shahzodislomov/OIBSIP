@@ -283,8 +283,10 @@ export default function HomePage() {
           </div>
 
           <div className="flex justify-center items-center">
-            <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-stone-900/90 border-4 border-orange-500/40 flex items-center justify-center shadow-2xl animate-float">
-              <span className="text-9xl filter drop-shadow-2xl">🍕</span>
+            <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-gradient-to-tr from-amber-600/30 to-orange-500/20 border-4 border-orange-500/40 flex items-center justify-center shadow-2xl animate-float">
+              <div className="w-40 h-40 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/40 shadow-inner">
+                <Sparkles className="w-20 h-20 text-orange-400 animate-pulse" />
+              </div>
               <div className="absolute inset-0 rounded-full border border-orange-400/20 animate-spin-slow pointer-events-none" />
             </div>
           </div>
