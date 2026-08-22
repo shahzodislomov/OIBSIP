@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -17,6 +18,7 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const Pizza = require('./models/Pizza');
 const Ingredient = require('./models/Ingredient');
+const User = require('./models/User');
 const { initialPizzas } = require('./controllers/pizzaController');
 const { initialIngredients } = require('./controllers/inventoryController');
 
@@ -69,6 +71,18 @@ const autoSeedData = async () => {
     if (ingredientCount === 0) {
       await Ingredient.insertMany(initialIngredients);
       console.log('🧀 Auto-seeded initial ingredients into database!');
+    }
+    const adminExists = await User.findOne({ role: 'admin' });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await User.create({
+        name: 'Chef Admin',
+        email: 'admin@pizzacraft.com',
+        password: hashedPassword,
+        role: 'admin',
+        isEmailVerified: true,
+      });
+      console.log('👤 Auto-seeded default Admin User (admin@pizzacraft.com / admin123)');
     }
   } catch (err) {
     console.error('Auto seed error:', err.message);

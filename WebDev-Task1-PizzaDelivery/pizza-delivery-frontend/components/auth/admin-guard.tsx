@@ -25,7 +25,7 @@ export const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }
       setAuthorized(true);
       setChecking(false);
     }
-  }, [user, isAuthenticated, router, showToast]);
+  }, [user, isAuthenticated, router]);
 
   if (checking) {
     return (
