@@ -1,16 +1,16 @@
-# 🍕 PizzaCraft - Artisanal Stone-Fired Pizza Delivery Application
+# PizzaCraft - Artisanal Stone-Fired Pizza Delivery Application
 
 A full-stack, production-grade pizza ordering and real-time inventory platform built with **Next.js 16 (App Router, Turbopack)**, **Node.js**, **Express**, **MongoDB (Mongoose)**, **Socket.IO**, **anime.js**, and **Razorpay Payment Gateway Integration**.
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-### 🎨 Frontend & UI Design System
-- **Obsidian Dark & Artisanal Gold Theme**: Custom HSL color design tokens, ultra-crisp glassmorphism panels, crimson/amber glowing borders, and smooth custom scrollbars.
+### Frontend & UI Design System
+- **Obsidian Dark & Copper Theme**: Custom HSL color design tokens, glassmorphism panels, crimson/amber borders, and smooth custom scrollbars.
 - **Ambient Bokeh Background Animation**: Interactive warm glowing Bokeh particle light orbs powered by `anime.js`.
 - **Interactive 2D Custom Pizza Builder**: Visual layer-by-layer canvas customizer (Crust, Sauce, Cheese, Veggies, Meats) with instant price calculations and topping chips.
-- **Dynamic Storefront Menu**: Category pill tabs, real-time search filtering, price/rating sorting, dietary badges (🌱 Veg / 🌶️ Spicy), and crust size option modals.
+- **Dynamic Storefront Menu**: Category pill tabs, real-time search filtering, price/rating sorting, dietary badges (Vegetarian / Spicy), and crust size option modals.
 - **Shadcn-Inspired UI Components**: Custom `Button`, `Card`, `Badge`, `Input`, `Dialog`, and global `Toast` notification provider.
 - **ReactBits Interactive Animations**:
   - `MagnetButton`: Mouse cursor magnetic spring effect using `anime.js`.
@@ -20,7 +20,7 @@ A full-stack, production-grade pizza ordering and real-time inventory platform b
 
 ---
 
-### ⚡ Backend & Real-Time API Architecture
+### Backend & Real-Time API Architecture
 - **RESTful API**: Clean Express controllers and models for Pizzas, Inventory Ingredients, Orders, Payments, and Admin Analytics.
 - **JWT & Password Security**: Password hashing with `bcryptjs` (10 salt rounds) and signed 7-day JWT authentication tokens.
 - **Email Verification Flow**: Token-based email verification flow with console link logging during development and Nodemailer SMTP integration.
@@ -29,13 +29,13 @@ A full-stack, production-grade pizza ordering and real-time inventory platform b
   - Backend `razorpay` SDK order creation (`POST /api/payments/create-order`).
   - Frontend Razorpay checkout popup script handler (`https://checkout.razorpay.com/v1/checkout.js`).
   - HMAC-SHA256 signature verification (`POST /api/payments/verify`) using `crypto`.
-- **Real-time Socket.IO Live Order Tracker**: Socket.IO room broadcast (`order_${id}`) for instant status progression (Received ➔ Preparing ➔ Baking ➔ Out for Delivery ➔ Delivered) with celebratory `canvas-confetti`.
+- **Real-time Socket.IO Live Order Tracker**: Socket.IO room broadcast (`order_${id}`) for instant status progression (Received -> Preparing -> Baking -> Out for Delivery -> Delivered) with celebratory `canvas-confetti`.
 - **Background Stock Monitoring**: Periodic `node-cron` job running every 30 minutes to audit inventory against thresholds and trigger low-stock alerts.
 - **Auto-Database Seeding**: Automatically seeds initial artisanal pizza menu items, ingredient stock levels, and a default Admin User (`admin@pizzacraft.com` / `admin123`) on server boot.
 
 ---
 
-### 🛡️ Admin Operations & Route Protection
+### Admin Operations & Route Protection
 - **`AdminGuard` Route Protection**: Next.js client-side authorization guard protecting all `/admin/*` sub-pages.
 - **Admin Dashboard (`/admin`)**: Revenue statistics, active kitchen order counters, and low-stock warning banners.
 - **Inventory Management (`/admin/inventory`)**: Stock level monitoring table, instant stock refill buttons, and custom ingredient creator modal.
@@ -43,7 +43,7 @@ A full-stack, production-grade pizza ordering and real-time inventory platform b
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend (`pizza-delivery-frontend`)
 - **Framework**: Next.js 16.3.2 (App Router, Turbopack)
@@ -65,9 +65,9 @@ A full-stack, production-grade pizza ordering and real-time inventory platform b
 
 ---
 
-## 🔑 Default Admin Credentials
+## Default Admin Credentials
 
-For fast access to the Admin Portal, use the built-in auto-seeded credentials or click **"Sign In as Admin (One Click)"** on the `/login` screen:
+For fast access to the Admin Portal, use the built-in auto-seeded credentials:
 
 | Field | Credentials |
 | :--- | :--- |
@@ -78,7 +78,7 @@ For fast access to the Admin Portal, use the built-in auto-seeded credentials or
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -144,7 +144,7 @@ npm run start
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 WebDev-Task1-PizzaDelivery/
@@ -182,7 +182,7 @@ WebDev-Task1-PizzaDelivery/
 
 ---
 
-## 📡 API Endpoints Overview
+## API Endpoints Overview
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
@@ -200,6 +200,6 @@ WebDev-Task1-PizzaDelivery/
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the MIT License. Built for Oasis Infobyte Web Development Internship Task.
