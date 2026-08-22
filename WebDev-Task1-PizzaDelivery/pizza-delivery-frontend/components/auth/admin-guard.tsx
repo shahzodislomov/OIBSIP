@@ -55,16 +55,6 @@ export const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }
 
           <div className="space-y-3 pt-2">
             <Button
-              onClick={() => router.push('/login')}
-              variant="gradient"
-              size="lg"
-              className="w-full rounded-2xl gap-2 font-bold shadow-xl shadow-orange-500/30"
-            >
-              <span>Sign In as Admin</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
-            <Button
               onClick={() => router.push('/')}
               variant="outline"
               size="md"

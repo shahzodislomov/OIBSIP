@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Lock, Phone, ArrowRight, Pizza } from 'lucide-react';
+import { User, Mail, Lock, Phone, ArrowRight, Pizza, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import axios from 'axios';
+import { register } from '@/services/auth';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -26,21 +26,23 @@ export default function RegisterPage() {
     setErrorMsg('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      await register({
         name,
         email,
         password,
-        phone,
       });
 
       showToast('Account Created!', 'Verification email sent. Please check your inbox.', 'success');
       router.push(`/verify-email?registered=true&email=${encodeURIComponent(email)}`);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Registration failed. Please try again.';
+      const msg =
+        err.response?.data?.message ||
+        (err.code === 'ERR_NETWORK'
+          ? 'Backend API server offline at http://localhost:5000/api'
+          : 'Registration failed. Please try again.');
+
       setErrorMsg(msg);
-      showToast('Registration Note', msg, 'info');
-      // If mock mode fallback
-      router.push(`/verify-email?registered=true&email=${encodeURIComponent(email)}`);
+      showToast('Registration Error', msg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +60,9 @@ export default function RegisterPage() {
         </div>
 
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs text-center">
-            {errorMsg}
+          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs text-center flex items-center justify-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -117,7 +120,7 @@ export default function RegisterPage() {
             isLoading={isLoading}
             variant="gradient"
             size="lg"
-            className="w-full rounded-2xl shadow-xl shadow-orange-500/30 mt-2"
+            className="w-full rounded-2xl shadow-xl shadow-orange-500/30 mt-2 font-bold"
           >
             <span>Register & Verify Email</span>
             <ArrowRight className="w-4 h-4" />

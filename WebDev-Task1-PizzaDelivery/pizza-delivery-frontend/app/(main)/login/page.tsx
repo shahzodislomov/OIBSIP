@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Shield, ArrowRight, Pizza } from 'lucide-react';
+import { Mail, Lock, Shield, ArrowRight, Pizza, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/components/ui/toast';
-import axios from 'axios';
+import { login } from '@/services/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,36 +39,25 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      if (res.data?.user && res.data?.token) {
-        setAuth(res.data.user, res.data.token);
-        showToast('Welcome back!', `Signed in as ${res.data.user.name}`, 'success');
-        if (res.data.user.role === 'admin' || res.data.user.isAdmin) {
+      const data = await login({ email, password });
+      if (data?.user && data?.token) {
+        setAuth(data.user, data.token);
+        showToast('Welcome back!', `Signed in as ${data.user.name}`, 'success');
+        if (data.user.role === 'admin' || data.user.isAdmin) {
           router.push('/admin');
         } else {
           router.push('/');
         }
-      } else {
-        const dummyUser = {
-          _id: 'u1',
-          name: email.split('@')[0] || 'Pizza Lover',
-          email,
-          role: email.includes('admin') ? 'admin' : 'user',
-        };
-        setAuth(dummyUser, 'mock_jwt_token_123');
-        showToast('Signed In', 'Logged in successfully', 'success');
-        router.push(dummyUser.role === 'admin' ? '/admin' : '/');
       }
     } catch (err: any) {
-      const dummyUser = {
-        _id: 'u1',
-        name: email.split('@')[0] || 'Pizza Lover',
-        email,
-        role: email.includes('admin') ? 'admin' : 'user',
-      };
-      setAuth(dummyUser, 'mock_jwt_token_123');
-      showToast('Signed In', 'Logged in successfully', 'success');
-      router.push(dummyUser.role === 'admin' ? '/admin' : '/');
+      const msg =
+        err.response?.data?.message ||
+        (err.code === 'ERR_NETWORK'
+          ? 'Backend API server offline at http://localhost:5000/api'
+          : 'Invalid email or password. Please try again.');
+
+      setErrorMsg(msg);
+      showToast('Authentication Error', msg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +75,9 @@ export default function LoginPage() {
         </div>
 
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs text-center">
-            {errorMsg}
+          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs text-center flex items-center justify-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -126,7 +116,7 @@ export default function LoginPage() {
             isLoading={isLoading}
             variant="gradient"
             size="lg"
-            className="w-full rounded-2xl shadow-xl shadow-orange-500/30 mt-2"
+            className="w-full rounded-2xl shadow-xl shadow-orange-500/30 mt-2 font-bold"
           >
             <span>Sign In</span>
             <ArrowRight className="w-4 h-4" />
