@@ -210,8 +210,9 @@ export default function OrderTrackerPage() {
             <p className="text-stone-400">Phone: {order.deliveryAddress.phone}</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-xs text-orange-300">
-            🛵 Driver live coordinates synchronized via Socket.IO room <code>order_{orderId}</code>.
+          <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-xs text-orange-300 flex items-center gap-2">
+            <Truck className="w-4 h-4 text-orange-400 shrink-0" />
+            <span>Driver live coordinates synchronized via Socket.IO room <code>order_{orderId}</code>.</span>
           </div>
         </SpotlightCard>
       </div>
