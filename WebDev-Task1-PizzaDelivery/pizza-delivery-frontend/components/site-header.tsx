@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ShoppingBag, User, Pizza, Menu, X, Shield, LogOut, Clock, Sparkles } from 'lucide-react';
@@ -13,10 +13,17 @@ export const SiteHeader: React.FC = () => {
   const router = useRouter();
   const { toggleCart, getTotalItems } = useCartStore();
   const { user, logout } = useAuthStore();
+
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const totalCartItems = getTotalItems();
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const totalCartItems = mounted ? getTotalItems() : 0;
+  const currentUser = mounted ? user : null;
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -94,17 +101,17 @@ export const SiteHeader: React.FC = () => {
 
           {/* User Account / Profile */}
           <div className="relative">
-            {user ? (
+            {currentUser ? (
               <div>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2.5 p-1.5 pl-3 rounded-xl bg-[#161620] border border-white/[0.07] hover:border-white/20 text-stone-200 transition-colors cursor-pointer"
                 >
                   <div className="w-6 h-6 rounded-full bg-[#e05638]/20 text-[#e05638] font-bold text-xs flex items-center justify-center border border-[#e05638]/30">
-                    {user.name ? user.name[0].toUpperCase() : 'U'}
+                    {currentUser.name ? currentUser.name[0].toUpperCase() : 'U'}
                   </div>
                   <span className="text-xs font-medium max-w-[100px] truncate hidden sm:inline-block">
-                    {user.name}
+                    {currentUser.name}
                   </span>
                 </button>
 
@@ -112,10 +119,10 @@ export const SiteHeader: React.FC = () => {
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-52 glass-panel bg-[#161620] rounded-2xl p-2 shadow-2xl border border-white/10 z-50">
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <p className="text-xs font-bold text-white">{user.name}</p>
-                      <p className="text-[11px] text-stone-400 truncate">{user.email}</p>
+                      <p className="text-xs font-bold text-white">{currentUser.name}</p>
+                      <p className="text-[11px] text-stone-400 truncate">{currentUser.email}</p>
                     </div>
-                    {(user.role === 'admin' || user.isAdmin) && (
+                    {(currentUser.role === 'admin' || currentUser.isAdmin) && (
                       <Link
                         href="/admin"
                         onClick={() => setUserDropdownOpen(false)}
@@ -173,7 +180,7 @@ export const SiteHeader: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
               className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 pathname === link.href
-                  ? 'bg-[#e05638] text-white'
+                  ? 'bg-[#e05638] text-[#ffffff]'
                   : 'text-stone-300 hover:bg-white/5'
               }`}
             >
