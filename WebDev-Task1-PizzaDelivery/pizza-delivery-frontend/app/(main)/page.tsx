@@ -2,14 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, Star, Flame, ChevronRight } from 'lucide-react';
-import { SplitText } from '@/components/animations/split-text';
-import { DecryptedText } from '@/components/animations/decrypted-text';
-import { MagnetButton } from '@/components/animations/magnet-button';
+import { ArrowRight, Star, Flame, ChevronRight, Clock, Award, ShieldCheck } from 'lucide-react';
 import { SpotlightCard } from '@/components/animations/spotlight-card';
 import { FloatingPizzas } from '@/components/animations/floating-pizzas';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/stores/cartStore';
 import { useToast } from '@/components/ui/toast';
 import { formatPrice } from '@/lib/utils';
@@ -60,114 +56,121 @@ export default function HomePage() {
       image: pizza.image,
       quantity: 1,
     });
-    showToast(`${pizza.name} added to cart!`, 'Medium size (12") added successfully.', 'success');
+    showToast(`${pizza.name} Added`, 'Medium size (12") added to your cart.', 'success');
   };
 
   const featuredPizza = pizzas[0];
 
   return (
-    <div className="relative space-y-20 pb-20 pt-6">
+    <div className="relative space-y-16 pb-20 pt-4">
       <FloatingPizzas />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-[36px] glass-panel p-8 sm:p-12 border border-white/10">
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+      {/* Editorial Hero Banner */}
+      <section className="relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-12 border border-white/[0.07]">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
           <div className="space-y-6 z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-900/80 border border-orange-500/30 text-orange-400 text-xs font-semibold shadow-inner">
-              <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
-              <span>HAND-TOSSED STONE-FIRED perfection</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-[#e05638] text-xs font-semibold">
+              <Flame className="w-3.5 h-3.5 text-[#e05638]" />
+              <span>48-Hour Slow Fermented Dough</span>
             </div>
 
-            <div className="space-y-4">
-              <SplitText
-                text="Artisanal Pizza Delivered Hot & Fresh"
-                className="text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight"
-              />
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-6xl font-extrabold text-white leading-tight tracking-tight">
+                Authentic Stone-Fired Artisanal Pizza
+              </h1>
               <p className="text-stone-300 text-base sm:text-lg max-w-xl leading-relaxed">
-                Experience wood-fired crusts, rich small-batch marinara, and melted imported cheeses crafted fresh for your midnight cravings or weekend celebrations.
+                Hand-tossed daily using San Marzano tomatoes, imported mozzarella, and slow-roasted ingredients cooked at 450°C.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link href="/menu">
-                <MagnetButton magnetStrength={0.25}>
-                  <Button variant="gradient" size="lg" className="rounded-2xl gap-2 text-base px-7 shadow-xl shadow-orange-500/30">
-                    <span>Order Now</span>
-                    <ArrowRight className="w-5 h-5" />
-                  </Button>
-                </MagnetButton>
+                <Button variant="gradient" size="lg" className="rounded-xl gap-2 font-bold px-7 shadow-sm">
+                  <span>Explore Menu</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
               </Link>
 
               <Link href="/builder">
-                <Button variant="outline" size="lg" className="rounded-2xl gap-2 border-white/20">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
-                  <span>Build Custom Pizza</span>
+                <Button variant="outline" size="lg" className="rounded-xl gap-2 border-white/10 text-stone-200">
+                  <span>Custom Pizza Studio</span>
                 </Button>
               </Link>
             </div>
 
-            {/* Quick Stats Ticker */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
-              <div>
-                <div className="text-2xl sm:text-3xl font-black text-orange-400">
-                  <DecryptedText text="25 MINS" />
+            {/* Metrics */}
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-white/[0.08]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-[#e05638]">
+                  <Clock className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-stone-400">Avg. Delivery Time</p>
+                <div>
+                  <div className="text-lg font-bold text-white">25 Mins</div>
+                  <p className="text-[11px] text-stone-400">Average Delivery</p>
+                </div>
               </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-black text-amber-400">
-                  <DecryptedText text="4.9 ★" />
+
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-amber-400">
+                  <Award className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-stone-400">Customer Rating</p>
+                <div>
+                  <div className="text-lg font-bold text-white">4.9 ★</div>
+                  <p className="text-[11px] text-stone-400">Customer Rating</p>
+                </div>
               </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-400">
-                  <DecryptedText text="100%" />
+
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-emerald-400">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-stone-400">Fresh Ingredients</p>
+                <div>
+                  <div className="text-lg font-bold text-white">100%</div>
+                  <p className="text-[11px] text-stone-400">Fresh Ingredients</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Hero Feature Showcase Card */}
+          {/* Featured Hero Showcase */}
           {featuredPizza && (
             <div className="relative flex justify-center">
-              <SpotlightCard className="w-full max-w-md bg-stone-950/80 border-white/15 p-6 rounded-3xl shadow-2xl">
-                <div className="relative group overflow-hidden rounded-2xl mb-5">
+              <SpotlightCard className="w-full max-w-md bg-[#161620]/90 border-white/10 p-6 rounded-3xl shadow-xl">
+                <div className="relative overflow-hidden rounded-2xl mb-5 h-64">
                   <img
                     src={featuredPizza.image}
                     alt={featuredPizza.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                   />
-                  <Badge variant="accent" className="absolute top-3 right-3 shadow-lg">
-                    🔥 Deal of the Day
-                  </Badge>
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#161620]/90 text-amber-400 border border-amber-500/30 text-[11px] font-bold">
+                    Featured Choice
+                  </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-black text-white">{featuredPizza.name}</h3>
-                    <span className="text-2xl font-black text-orange-400">
+                    <h3 className="text-xl font-bold text-white">{featuredPizza.name}</h3>
+                    <span className="text-xl font-bold text-[#e05638]">
                       {formatPrice(featuredPizza.prices.medium)}
                     </span>
                   </div>
-                  <p className="text-xs text-stone-400 leading-relaxed">
+                  <p className="text-xs text-stone-300 leading-relaxed">
                     {featuredPizza.description}
                   </p>
 
                   <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                    <div className="flex items-center gap-1.5 text-xs text-amber-300">
+                    <div className="flex items-center gap-1.5 text-xs text-amber-400">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                       <span className="font-bold">{featuredPizza.rating}</span>
-                      <span className="text-stone-500">({featuredPizza.numReviews} reviews)</span>
+                      <span className="text-stone-400">({featuredPizza.numReviews} reviews)</span>
                     </div>
                     <Button
                       onClick={() => handleQuickAdd(featuredPizza)}
                       variant="default"
                       size="sm"
-                      className="rounded-xl shadow-md"
+                      className="rounded-xl font-medium"
                     >
-                      Quick Add +
+                      Quick Add
                     </Button>
                   </div>
                 </div>
@@ -177,57 +180,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Menu Grid */}
-      <section className="space-y-8">
+      {/* Featured Menu Catalog */}
+      <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <Badge variant="default" className="mb-2">
-              Artisanal Selection
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Trending Slices & Classics
+            <span className="text-xs font-semibold text-[#e05638] uppercase tracking-wider block mb-1">
+              Menu Selection
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+              Signature Oven-Baked Pizzas
             </h2>
           </div>
           <Link href="/menu">
-            <Button variant="ghost" className="gap-2 text-orange-400 hover:text-orange-300">
-              <span>View Full Menu</span>
+            <Button variant="ghost" className="gap-1.5 text-xs font-semibold text-[#e05638] hover:text-[#c8462b]">
+              <span>View All Items</span>
               <ChevronRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-stone-400">Loading menu items from API...</div>
+          <div className="text-center py-12 text-stone-400 text-sm">Loading pizza catalog...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pizzas.slice(0, 6).map((pizza) => (
-              <SpotlightCard key={pizza._id} className="flex flex-col justify-between h-full group">
+              <SpotlightCard key={pizza._id} className="flex flex-col justify-between h-full p-5 rounded-2xl bg-[#161620]/80">
                 <div>
-                  <div className="relative overflow-hidden rounded-2xl mb-4 h-48">
+                  <div className="relative overflow-hidden rounded-xl mb-4 h-48">
                     <img
                       src={pizza.image}
                       alt={pizza.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 left-3 flex gap-2">
+                    <div className="absolute top-3 left-3 flex gap-1.5">
                       {pizza.isVegetarian && (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold">
-                          🌱 VEG
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 text-[10px] font-semibold">
+                          Vegetarian
                         </span>
                       )}
                       {pizza.isSpicy && (
-                        <span className="px-2 py-0.5 rounded-full bg-red-950/90 text-red-400 border border-red-500/40 text-[10px] font-bold">
-                          🌶️ SPICY
+                        <span className="px-2 py-0.5 rounded-md bg-red-950/90 text-red-300 border border-red-500/30 text-[10px] font-semibold">
+                          Spicy
                         </span>
                       )}
                     </div>
                   </div>
 
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-stone-100 group-hover:text-orange-400 transition-colors">
+                    <h3 className="font-bold text-base text-white">
                       {pizza.name}
                     </h3>
-                    <span className="text-xs px-2 py-1 rounded-lg bg-stone-900 text-stone-300 border border-white/10 font-mono">
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-stone-900 text-stone-300 border border-white/10 font-mono">
                       {pizza.category}
                     </span>
                   </div>
@@ -237,10 +240,10 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between">
                   <div>
-                    <span className="text-xs text-stone-400 block">Medium 12"</span>
-                    <span className="text-lg font-extrabold text-orange-400">
+                    <span className="text-[10px] text-stone-400 block">Medium (12")</span>
+                    <span className="text-base font-bold text-[#e05638]">
                       {formatPrice(pizza.prices.medium)}
                     </span>
                   </div>
@@ -249,48 +252,15 @@ export default function HomePage() {
                     onClick={() => handleQuickAdd(pizza)}
                     variant="default"
                     size="sm"
-                    className="rounded-xl"
+                    className="rounded-xl text-xs"
                   >
-                    Add to Order
+                    Add to Cart
                   </Button>
                 </div>
               </SpotlightCard>
             ))}
           </div>
         )}
-      </section>
-
-      {/* Visual Custom Pizza Banner */}
-      <section className="relative rounded-3xl glass-panel p-8 sm:p-12 overflow-hidden border border-orange-500/30">
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-orange-500/10 blur-3xl" />
-        <div className="grid md:grid-cols-2 gap-8 items-center relative z-10">
-          <div className="space-y-4">
-            <Badge variant="accent">Interactive Pizza Customizer</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">
-              Craft Your Masterpiece Step-by-Step
-            </h2>
-            <p className="text-stone-300 text-sm leading-relaxed">
-              Choose your artisan crust, select house-made sauce, double the cheese, and layer veggies and meats with instant 2D animated visual updates!
-            </p>
-            <Link href="/builder" className="inline-block pt-2">
-              <MagnetButton magnetStrength={0.2}>
-                <Button variant="gradient" size="lg" className="rounded-2xl gap-2 shadow-lg shadow-orange-500/30">
-                  <Sparkles className="w-5 h-5" />
-                  <span>Launch Visual Builder</span>
-                </Button>
-              </MagnetButton>
-            </Link>
-          </div>
-
-          <div className="flex justify-center items-center">
-            <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-gradient-to-tr from-amber-600/30 to-orange-500/20 border-4 border-orange-500/40 flex items-center justify-center shadow-2xl animate-float">
-              <div className="w-40 h-40 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/40 shadow-inner">
-                <Sparkles className="w-20 h-20 text-orange-400 animate-pulse" />
-              </div>
-              <div className="absolute inset-0 rounded-full border border-orange-400/20 animate-spin-slow pointer-events-none" />
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   );
