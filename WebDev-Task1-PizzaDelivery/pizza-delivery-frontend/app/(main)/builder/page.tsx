@@ -178,28 +178,28 @@ export default function CustomBuilderPage() {
         <div className="sticky top-28 glass-panel rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center min-h-[460px] text-center space-y-6">
           <div className="relative">
             {/* Layered Pizza Canvas */}
-            <div className="pizza-canvas-preview relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-amber-700/40 border-8 border-amber-900/60 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300">
+            <div className="pizza-canvas-preview relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-[#8c592b]/40 border-4 border-[#6e431f] shadow-xl flex items-center justify-center overflow-hidden transition-all duration-300">
               {/* Dough Base */}
-              <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 border-4 border-amber-700/50 shadow-inner flex items-center justify-center">
+              <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#a87445] to-[#c99563] border-2 border-[#8c592b]/50 shadow-inner flex items-center justify-center">
                 {/* Sauce Layer */}
                 <div
-                  className={`absolute inset-4 rounded-full transition-colors duration-500 ${
+                  className={`absolute inset-4 rounded-full transition-colors duration-300 ${
                     selectedSauce.includes('Pesto')
-                      ? 'bg-emerald-700/80'
+                      ? 'bg-emerald-800/85'
                       : selectedSauce.includes('White')
-                      ? 'bg-amber-100/80'
+                      ? 'bg-amber-100/85'
                       : selectedSauce.includes('Buffalo')
-                      ? 'bg-red-600/90'
-                      : 'bg-red-700/90'
+                      ? 'bg-red-700/90'
+                      : 'bg-red-800/90'
                   }`}
                 >
                   {/* Cheese Layer */}
-                  <div className="absolute inset-2 rounded-full bg-amber-200/80 backdrop-blur-[1px] flex items-center justify-center flex-wrap p-4 gap-3">
+                  <div className="absolute inset-2 rounded-full bg-[#fce4c0]/85 backdrop-blur-[1px] flex items-center justify-center flex-wrap p-4 gap-2">
                     {/* Render Selected Toppings Badges */}
                     {selectedToppings.map((topName, idx) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded-xl bg-orange-950/90 text-orange-200 border border-orange-500/40 text-[11px] font-bold shadow-md animate-in zoom-in-75 duration-300"
+                        className="px-2.5 py-0.5 rounded-full bg-[#0d0d12]/90 text-stone-100 border border-[#e05638]/40 text-[10px] font-semibold shadow-sm"
                       >
                         + {topName}
                       </span>
