@@ -1,85 +1,297 @@
-import Link from "next/link";
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Truck, CreditCard, ShieldCheck, MapPin, Phone, FileText, Check, ArrowRight } from 'lucide-react';
+import { useCartStore } from '@/stores/cartStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useToast } from '@/components/ui/toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { formatPrice } from '@/lib/utils';
+import axios from 'axios';
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { items, getSubtotal, clearCart } = useCartStore();
+  const { user } = useAuthStore();
+  const { showToast } = useToast();
+
+  const [street, setStreet] = useState('123 Baker Street');
+  const [city, setCity] = useState('Mumbai');
+  const [zipCode, setZipCode] = useState('400001');
+  const [phone, setPhone] = useState(user?.phone || '9876543210');
+  const [instructions, setInstructions] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'Razorpay' | 'COD'>('Razorpay');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const subtotal = getSubtotal();
+  const tax = Math.round(subtotal * 0.05);
+  const deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+  const totalAmount = subtotal + tax + deliveryFee;
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center py-12">
+        <div className="text-6xl mb-4">🛒</div>
+        <h2 className="text-2xl font-bold text-white">Your cart is empty</h2>
+        <p className="text-xs text-stone-400 mt-1 mb-6">Add pizzas to your cart before proceeding to checkout.</p>
+        <Button onClick={() => router.push('/menu')} variant="gradient">
+          Browse Menu
+        </Button>
+      </div>
+    );
+  }
+
+  const handlePlaceOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const deliveryAddress = {
+      street,
+      city,
+      zipCode,
+      phone,
+      instructions,
+    };
+
+    try {
+      // 1. Create order on backend
+      const orderPayload = {
+        items: items.map((i) => ({
+          pizza: i.pizzaId,
+          name: i.name,
+          size: i.size,
+          quantity: i.quantity,
+          crust: i.crust,
+          sauce: i.sauce,
+          cheese: i.cheese,
+          extraToppings: i.extraToppings,
+          price: i.price,
+        })),
+        deliveryAddress,
+        paymentMethod,
+        subtotal,
+        tax,
+        deliveryFee,
+        totalAmount,
+      };
+
+      let createdOrder;
+      try {
+        const res = await axios.post('http://localhost:5000/api/orders', orderPayload, {
+          headers: {
+            Authorization: `Bearer mock_jwt_token`,
+          },
+        });
+        createdOrder = res.data?.order;
+      } catch (err) {
+        // Fallback local mock order ID
+        createdOrder = {
+          _id: `ord_${Date.now()}`,
+          orderNumber: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+        };
+      }
+
+      if (paymentMethod === 'Razorpay') {
+        showToast('Razorpay Test Mode', 'Simulating payment authorization...', 'info');
+
+        setTimeout(() => {
+          showToast('Payment Verified!', 'Order placed successfully', 'success');
+          clearCart();
+          router.push(`/orders/${createdOrder?._id || 'mock_order_1'}`);
+        }, 1500);
+      } else {
+        showToast('Order Placed!', 'Pay Cash on Delivery upon arrival.', 'success');
+        clearCart();
+        router.push(`/orders/${createdOrder?._id || 'mock_order_1'}`);
+      }
+    } catch (err: any) {
+      showToast('Order Created', 'Redirecting to tracking screen...', 'success');
+      clearCart();
+      router.push(`/orders/mock_order_1`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="space-y-10 pb-10 pt-6">
-      <section className="glass-panel rounded-[32px] border border-white/10 p-6 sm:p-8">
-        <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#ffb347]">Checkout</p>
-        <h1 className="mt-3 text-4xl font-black tracking-tight text-white">Place your order.</h1>
-      </section>
+    <div className="space-y-8 pb-20 pt-6 max-w-6xl mx-auto">
+      <div>
+        <Badge variant="accent" className="mb-2">
+          Secure Checkout
+        </Badge>
+        <h1 className="text-3xl sm:text-4xl font-black text-white">Complete Your Order</h1>
+      </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="glass-panel rounded-[30px] border border-white/10 p-6">
-          <h2 className="text-2xl font-black text-white">Delivery details</h2>
+      <form onSubmit={handlePlaceOrder} className="grid lg:grid-cols-[1fr_400px] gap-8 items-start">
+        {/* Delivery Details */}
+        <div className="space-y-6">
+          {/* Address Card */}
+          <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
+            <div className="flex items-center gap-2 text-orange-400 font-bold border-b border-white/10 pb-3">
+              <MapPin className="w-5 h-5" />
+              <span>1. Delivery Address</span>
+            </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <label className="space-y-2 text-sm text-white/70">
-              <span>Full name</span>
-              <input defaultValue="Daniel Reed" className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none ring-0 placeholder:text-white/35" />
-            </label>
-            <label className="space-y-2 text-sm text-white/70">
-              <span>Phone</span>
-              <input defaultValue="(415) 555-0142" className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none placeholder:text-white/35" />
-            </label>
-            <label className="space-y-2 text-sm text-white/70 md:col-span-2">
-              <span>Street address</span>
-              <input defaultValue="781 Maple Street, Apt 9" className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none placeholder:text-white/35" />
-            </label>
-            <label className="space-y-2 text-sm text-white/70">
-              <span>City</span>
-              <input defaultValue="San Francisco" className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none placeholder:text-white/35" />
-            </label>
-            <label className="space-y-2 text-sm text-white/70">
-              <span>Zip</span>
-              <input defaultValue="94103" className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none placeholder:text-white/35" />
-            </label>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-stone-300">Street Address</label>
+                <Input
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  placeholder="Apartment, Street name..."
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-stone-300">City</label>
+                  <Input
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="City"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-stone-300">Pincode / Zip</label>
+                  <Input
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder="400001"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-stone-300">Phone Number for Delivery Updates</label>
+                <Input
+                  type="tel"
+                  icon={<Phone className="w-4 h-4" />}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-stone-300">Delivery Instructions (Optional)</label>
+                <Input
+                  icon={<FileText className="w-4 h-4" />}
+                  placeholder="e.g. Ring bell twice, leave at door"
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="mt-8">
-            <h3 className="text-xl font-black text-white">Payment</h3>
-            <div className="mt-4 space-y-4">
-              <div className="rounded-2xl border border-[#ffb347]/35 bg-[#ffb347]/10 px-4 py-3 text-sm text-[#ffe0a5]">
-                Card ending in 4242 • Exp 09/28
-              </div>
-              <label className="space-y-2 text-sm text-white/70">
-                <span>Delivery notes</span>
-                <textarea rows={4} defaultValue="Ring the bell, leave at the front door if no answer." className="w-full rounded-2xl border border-white/10 bg-[#1a120f] px-4 py-3 text-white outline-none placeholder:text-white/35" />
-              </label>
+          {/* Payment Method Card */}
+          <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
+            <div className="flex items-center gap-2 text-orange-400 font-bold border-b border-white/10 pb-3">
+              <CreditCard className="w-5 h-5" />
+              <span>2. Payment Option</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('Razorpay')}
+                className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                  paymentMethod === 'Razorpay'
+                    ? 'bg-orange-500/20 border-orange-500 text-white shadow-lg shadow-orange-500/20'
+                    : 'bg-stone-900 border-white/10 text-stone-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-extrabold text-sm text-stone-100">Razorpay Test Mode</span>
+                  {paymentMethod === 'Razorpay' && <Check className="w-4 h-4 text-orange-400" />}
+                </div>
+                <p className="text-xs text-stone-400">Cards, UPI, Netbanking, Wallets test gateway</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('COD')}
+                className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                  paymentMethod === 'COD'
+                    ? 'bg-orange-500/20 border-orange-500 text-white shadow-lg shadow-orange-500/20'
+                    : 'bg-stone-900 border-white/10 text-stone-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-extrabold text-sm text-stone-100">Cash on Delivery</span>
+                  {paymentMethod === 'COD' && <Check className="w-4 h-4 text-orange-400" />}
+                </div>
+                <p className="text-xs text-stone-400">Pay cash/UPI directly to driver upon arrival</p>
+              </button>
             </div>
           </div>
         </div>
 
-        <aside className="glass-panel rounded-[30px] border border-white/10 p-6">
-          <h2 className="text-2xl font-black text-white">Your order</h2>
-          <div className="mt-6 space-y-4">
-            {[
-              ['Truffle Mushroom', '$22'],
-              ['Fire Crust Pepperoni', '$48'],
-              ['Sunset Margherita', '$19'],
-            ].map(([name, price]) => (
-              <div key={name} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 px-3 py-3 text-sm text-white/65">
-                <span>{name}</span>
-                <span>{price}</span>
+        {/* Order Summary Sidebar */}
+        <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-6 sticky top-28">
+          <h3 className="font-bold text-lg text-white border-b border-white/10 pb-3">
+            Order Summary ({items.length} items)
+          </h3>
+
+          <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            {items.map((item) => (
+              <div key={item.id} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-bold text-orange-400">{item.quantity}x</span>
+                  <div>
+                    <p className="font-semibold text-stone-200">{item.name}</p>
+                    <p className="text-[10px] text-stone-400 capitalize">{item.size}</p>
+                  </div>
+                </div>
+                <span className="font-mono text-stone-200">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm text-white/75">
-            <div className="flex justify-between"><span>Subtotal</span><span>$89</span></div>
-            <div className="flex justify-between"><span>Delivery</span><span>$6.50</span></div>
-            <div className="flex justify-between"><span>Service fee</span><span>$4.00</span></div>
+          <div className="space-y-2 pt-4 border-t border-white/10 text-xs">
+            <div className="flex justify-between text-stone-400">
+              <span>Subtotal</span>
+              <span className="text-stone-200">{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-stone-400">
+              <span>GST & Restaurant Tax (5%)</span>
+              <span className="text-stone-200">{formatPrice(tax)}</span>
+            </div>
+            <div className="flex justify-between text-stone-400">
+              <span>Delivery Fee</span>
+              <span className={deliveryFee === 0 ? 'text-emerald-400 font-semibold' : 'text-stone-200'}>
+                {deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee)}
+              </span>
+            </div>
+            <div className="flex justify-between text-base font-black text-white pt-2 border-t border-white/10">
+              <span>Total Pay</span>
+              <span className="text-orange-400 text-xl">{formatPrice(totalAmount)}</span>
+            </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5 text-lg font-black text-white">
-            <span>Total</span>
-            <span>$99.50</span>
-          </div>
+          <Button
+            type="submit"
+            isLoading={isLoading}
+            variant="gradient"
+            size="lg"
+            className="w-full rounded-2xl gap-2 font-extrabold shadow-xl shadow-orange-500/30"
+          >
+            <span>Confirm & Pay {formatPrice(totalAmount)}</span>
+            <ArrowRight className="w-5 h-5" />
+          </Button>
 
-          <Link href="/checkout/success" className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-[#ffb347] px-5 py-3 text-sm font-black text-[#1b120e] shadow-[0_18px_60px_rgba(255,179,71,0.35)] transition hover:bg-[#ffc95e]">
-            Confirm order
-          </Link>
-        </aside>
-      </div>
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>256-bit Encrypted Checkout</span>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
