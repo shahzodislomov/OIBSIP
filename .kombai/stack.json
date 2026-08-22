@@ -1,0 +1,31 @@
+// Kombai Tech Stack Configuration
+// Each value must be a string or an array of strings.
+// Example: "Framework": "Vite" or "Project Type": ["React", "Vue"]
+{
+  "CI/CD Platform": "GitHub Actions",
+  "Internationalization": [
+    "i18next",
+    "react-i18next"
+  ],
+  "Animation Library": [
+    "Anime.js",
+    "Framer Motion"
+  ],
+  "API Client": "TanStack Query",
+  "State Management": "Zustand",
+  "TS/JS": [
+    "JS",
+    "TS"
+  ],
+  "Tailwind Version": "v3",
+  "Component Library": [
+    "NextUI",
+    "HeroUI",
+    "Radix",
+    "shadcn v4 (Base UI)",
+    "shadcn v4 (Radix UI)",
+    "shadcn v3"
+  ],
+  "Project Type": "React",
+  "Framework": "NextJS 16"
+}
