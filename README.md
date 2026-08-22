@@ -91,7 +91,7 @@ For fast access to the Admin Portal, use the built-in auto-seeded credentials or
 
 ```bash
 # Navigate to backend directory
-cd pizza-delivery-backend
+cd WebDev-Task1-PizzaDelivery/pizza-delivery-backend
 
 # Install dependencies
 npm install
